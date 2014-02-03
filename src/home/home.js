@@ -8,5 +8,4 @@ angular.module('angular-login.home', ['angular-login.grandfather'])
     });
 })
 .controller('HomeController', function ($scope) {
-  $scope.users = angular.fromJson(localStorage.getItem('userStorage'));
 });

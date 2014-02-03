@@ -1,38 +1,22 @@
 angular.module('loginService', [])
 .provider('loginService', function () {
-  var userToken = localStorage.getItem('userToken'),
-      errorState = 'app.error',
+  var errorState = 'app.error',
       logoutState = 'app.home';
 
   this.$get = function ($rootScope, $http, $q, $state, $location, CookieFactory) {
 
-    /**
-     * Low-level, private functions.
-     */
-    var setHeaders = function (token) {
-    //   if (!token) {
-    //     delete $http.defaults.headers.common['X-Subject-Token'];
-    //     return;
-    //   }
-    //   $http.defaults.headers.common['X-Subject-Token'] = token.toString();
-    };
+    var userToken = CookieFactory.getCookie("token");
 
     var setToken = function (token) {
       if (!token) {
-        localStorage.removeItem('userToken');
+        CookieFactory.deleteCookie('token');
       } else {
-        localStorage.setItem('userToken', token);
-      }
-      setHeaders(token);
-      if(token != null)
         CookieFactory.setCookie('token', token, { expires: 7, path: '/' });
-
+      }
     };
 
     var getLoginData = function () {
-      if (userToken) {
-        setHeaders(userToken);
-      } else {
+      if (!userToken) {
         wrappedService.userRole = userRoles.public;
         wrappedService.isLogged = false;
         wrappedService.doneLoading = true;
@@ -168,7 +152,7 @@ angular.module('loginService', [])
         this.userRole = userRoles.public;
         this.user = {};
         this.isLogged = false;
-        // CookieFactory.deleteCookie('token');
+        CookieFactory.deleteCookie('token');
         $state.go(logoutState);
       },
       resolvePendingState: function (httpPromise) {
