@@ -4,7 +4,7 @@ angular.module('loginService', [])
       errorState = 'app.error',
       logoutState = 'app.home';
 
-  this.$get = function ($rootScope, $http, $q, $state) {
+  this.$get = function ($rootScope, $http, $q, $state, $location, CookieFactory) {
 
     /**
      * Low-level, private functions.
@@ -24,6 +24,9 @@ angular.module('loginService', [])
         localStorage.setItem('userToken', token);
       }
       setHeaders(token);
+      if(token != null)
+        CookieFactory.setCookie('token', token, { expires: 7, path: '/' });
+
     };
 
     var getLoginData = function () {
@@ -147,6 +150,10 @@ angular.module('loginService', [])
             "bitMask": 4,
             "title": "admin"
           };
+
+        if("undefined" != typeof $location.search().callbackUrl) {
+          window.location = $location.search().callbackUrl+"?token="+CookieFactory.getCookie('token');
+        }
         return user;
       },
       loginUser: function (httpPromise) {
@@ -161,6 +168,7 @@ angular.module('loginService', [])
         this.userRole = userRoles.public;
         this.user = {};
         this.isLogged = false;
+        // CookieFactory.deleteCookie('token');
         $state.go(logoutState);
       },
       resolvePendingState: function (httpPromise) {
@@ -207,4 +215,26 @@ angular.module('loginService', [])
 
     return wrappedService;
   };
+});
+
+angular.module('loginService')
+.factory('CookieFactory', function(){
+
+    return {
+        getCookie: function(name){
+            return $.cookie(name);
+        },
+
+        getAllCookies: function(){
+            return $.cookie();
+        },
+
+        setCookie: function(name, value, param){
+            return $.cookie(name, value, param);
+        },
+
+        deleteCookie: function(name){
+            return $.removeCookie(name);
+        }
+    }
 });

@@ -101,7 +101,8 @@ module.exports = function (grunt) {
         src: [
           'libs/angular/angular.js',
           'libs/angular-animate/angular-animate.js',
-          'libs/angular-mocks/angular-mocks.js',
+          'libs/jquery/jquery.min.js',
+          'libs/jquery.cookie/jquery.cookie.js',
           'libs/angular-ui-router/release/angular-ui-router.js'
         ],
         dest: 'build/libs.js'

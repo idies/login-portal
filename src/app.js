@@ -11,8 +11,9 @@ angular.module('angular-login', [
   // components
   'ngAnimate'
 ])
-.config(function ($urlRouterProvider, $httpProvider) {
+.config(function ($urlRouterProvider, $httpProvider, $locationProvider) {
   $urlRouterProvider.otherwise('/');
+  $locationProvider.html5Mode(true);
 })
 .run(function ($rootScope) {
   /**
