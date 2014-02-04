@@ -1,13 +1,13 @@
 module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-html2js');
   grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-git-describe');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-concat-sourcemap');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-forever');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -32,19 +32,10 @@ module.exports = function (grunt) {
         }
       }
     },
-    connect: {
-      serve: {
-        options: {
-          port: 8080,
-          base: 'build/',
-          hostname: '*',
-          debug: true
-        }
-      }
-    },
     watch: {
       options: {
-        atBegin: true
+        atBegin: true,
+        livereload: true
       },
       templates: {
         files: ['src/**/*.tpl.html'],
@@ -61,6 +52,15 @@ module.exports = function (grunt) {
       index: {
         files: 'index.html',
         tasks: ['copy:index']
+      },
+      server: {
+        files: 'run.js',
+        tasks: ['forever:restart']
+      }
+    },
+    forever: {
+      options: {
+        index: 'run.js'
       }
     },
     'git-describe': {
@@ -145,5 +145,5 @@ module.exports = function (grunt) {
   // - concatenates all the libraries in build/libs.js
   // - copies index.html over build/
   grunt.registerTask('build', ['clean', 'html2js', 'less', 'saveRevision', 'concat_sourcemap:app', 'concat_sourcemap:libs', 'copy']);
-  grunt.registerTask('default', ['clean', 'concat_sourcemap:libs', 'connect', 'watch']);
+  grunt.registerTask('default', ['clean', 'concat_sourcemap:libs', 'watch', 'forever']);
 };
