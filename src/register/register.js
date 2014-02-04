@@ -13,13 +13,16 @@ angular.module('angular-login.register', ['angular-login.grandfather'])
   $scope.redirect = false;
 
   $scope.registerObj = {
-    role: 'user'
+    user: {"enabled": false}
   };
 
   $scope.submit = function (formInstance) {
     // xhr is departing
     $scope.xhr = true;
-    $http.post('/user', $scope.registerObj)
+
+    delete $scope.registerObj.user.password2;
+    
+    $http.post('http://zinc26.pha.jhu.edu:5005/zinc26.pha.jhu.edu:35357/v2.0/users', $scope.registerObj)
     .success(function (data, status, headers, config) {
       console.info('post success - ', data);
       $scope.xhr = false;
