@@ -17,9 +17,8 @@ angular.module('angular-login.grandfather', ['ui.router', 'templates-app'])
           if (loginService.pendingStateChange) {
             return loginService.resolvePendingState($http(
                 {
-                  url: 'http://zinc26.pha.jhu.edu:5005/zinc26.pha.jhu.edu:5000/v3/auth/tokens',
-                  method: "GET",
-                  headers: {"X-Subject-Token": CookieFactory.getCookie("token")}
+                  url: 'http://zinc26.pha.jhu.edu:5005/zinc26.pha.jhu.edu:5000/v2.0/tokens/'+CookieFactory.getCookie("token"),
+                  method: "GET"
                 }
               ));
           } else {

@@ -29,7 +29,7 @@ require('http').createServer(function (req, res) {
 		});
 	} else {
 		res.writeHead(302, {
-		  'Location': callbackUrl+"?token="+token,
+		  'Location': callbackUrl+((callbackUrl.indexOf("?") > 0)?"&":"?")+"token="+token,
 		  'Cache-Control': 'no-cache, no-store, must-revalidate',
 		  'Pragma': 'no-cache',
 		  'Expires': '0'

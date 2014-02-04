@@ -123,7 +123,7 @@ angular.module('loginService', [])
          */
 
         // setup token
-        setToken(headers("x-subject-token"));
+        setToken(user.access.token.id);
         // update user
         angular.extend(wrappedService.user, user);
         // flag true on isLogged
@@ -136,7 +136,8 @@ angular.module('loginService', [])
           };
 
         if("undefined" != typeof $location.search().callbackUrl) {
-          window.location = $location.search().callbackUrl+"?token="+CookieFactory.getCookie('token');
+          window.location = $location.search().callbackUrl+(($location.search().callbackUrl.indexOf("?") > 0)?"&":"?")+
+            "token="+CookieFactory.getCookie('token');
         }
         return user;
       },

@@ -42,25 +42,17 @@ angular.module('angular-login', [
     wrong: false
   };
   $scope.loginMe = function () {
-
-    var loginPromise = $http.post('http://zinc26.pha.jhu.edu:5005/zinc26.pha.jhu.edu:5000/v3/auth/tokens', 
+    var loginPromise = $http.post('http://zinc26.pha.jhu.edu:5005/zinc26.pha.jhu.edu:5000/v2.0/tokens', 
       {
-          "auth": {
-              "identity": {
-                  "methods": [
-                      "password"
-                  ],
-                  "password": {
-                      "user": {
-                          "domain": {
-                              "id": "default"
-                          },
-                          "name": $scope.login.username,
-                          "password": $scope.login.password
-                      }
-                  }
-              }
-          }
+       "auth": 
+       {
+         "tenantName": $scope.login.username, 
+         "passwordCredentials":
+         {
+           "username": $scope.login.username, 
+           "password": $scope.login.password
+         }
+       }
       }
     );
 
