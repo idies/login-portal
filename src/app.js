@@ -42,7 +42,7 @@ angular.module('angular-login', [
     wrong: false
   };
   $scope.loginMe = function () {
-    var loginPromise = $http.post('http://zinc26.pha.jhu.edu:5005/zinc26.pha.jhu.edu:5000/v2.0/tokens', 
+    var loginPromise = $http.post('/keystone/v2.0/tokens', 
       {
        "auth": 
        {
