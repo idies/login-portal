@@ -9,6 +9,8 @@ var events = require('events');
 var path   = require('path');
 var fs     = require('fs');
 
+var reguser = require('./reguser');
+
 var url = require('url');
 
 var fileServer = new static.Server('./build', {cache: false});
@@ -28,6 +30,26 @@ require('http').createServer(function (req, res) {
 
         if(url.path.indexOf("/keystone/") == 0) {
             proxyReq(req, res);
+        } else if(url.path.indexOf("/reguser") == 0) {
+            req.on('data', function(chunk) {
+                var reqData = JSON.parse(chunk);
+                var regUserRequest = reguser.reguser(reqData.username, reqData.password, reqData.email);
+                regUserRequest.on("registered", function(result) {
+                    var body = JSON.stringify(result);
+                    res.writeHead(200, {
+                        'Content-Length': body.length,
+                        'Content-Type': 'application/json' });
+                    res.write(body);
+                    res.end();
+                });
+                regUserRequest.on("error", function(error) {
+                    res.writeHead(500, {
+                        'Content-Length': error.length,
+                        'Content-Type': 'application/json' });
+                    res.write(error);
+                    res.end();
+                });
+            });
         } else {
             fileServer.serve(req, res)
             .on("error", function(error) {
@@ -57,8 +79,7 @@ var proxyReq = function(req, res) {
         port: config.keystone.serverPort,
         path: reqPath,
         method: req.method,
-        headers: req.headers,
-        'content-type': req['content-type']
+        headers: req.headers
     };
 
     // set admin header for allowed paths

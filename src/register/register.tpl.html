@@ -7,7 +7,7 @@
     </div>
   </div-->
   <div class="form-input username">
-    <input type="text" class="form-control" placeholder="Username" name="username" ng-model="registerObj.user.name" autofocus="true"
+    <input type="text" class="form-control" placeholder="Username" name="username" ng-model="registerObj.username" autofocus="true"
       ng-minlength="4" ng-maxlength="16" ng-required="true" remote-validated="used">
     <div class="errors" ng-class="{ active: registerForm.username.$invalid && registerForm.username.$dirty }">
       <div class="error ng-hide" ng-show="registerForm.username.$error.minlength">
@@ -33,8 +33,8 @@
     </div>
   </div> -->
   <div class="form-input password">
-    <input type="password" class="form-control password" placeholder="Password" name="password" ng-model="registerObj.user.password" ng-minlength="4" ng-maxlength="16" ng-required="true" password-match="registerObj.user.password2">
-    <input type="password" class="form-control password2" placeholder="Repeat Password" name="password2" ng-model="registerObj.user.password2">
+    <input type="password" class="form-control password" placeholder="Password" name="password" ng-model="registerObj.password" ng-minlength="4" ng-maxlength="16" ng-required="true" password-match="registerObj.password2">
+    <input type="password" class="form-control password2" placeholder="Repeat Password" name="password2" ng-model="registerObj.password2">
     <div class="errors" ng-class="{ active: registerForm.password.$invalid && registerForm.password.$dirty }">
       <div class="error ng-hide" ng-show="registerForm.password.$error.match">
         <p>Passwords do not match.</p>
@@ -48,7 +48,7 @@
     </div>
   </div>
   <div class="form-input email">
-    <input type="email" class="form-control email" placeholder="E-Mail" name="email" ng-model="registerObj.user.email" ng-required="true" remote-validated="used">
+    <input type="email" class="form-control email" placeholder="E-Mail" name="email" ng-model="registerObj.email" ng-required="true" remote-validated="used">
     <div class="errors" ng-class="{ active: registerForm.email.$invalid && registerForm.email.$dirty }">
       <div class="error ng-hide" ng-show="registerForm.email.$error.email">
         <p>E-Mail seems invalid.</p>

@@ -1,7 +1,12 @@
 var config = require('./config');
 var http = require('http');
+var events = require('events');
+var util = require('util');
 
-exports.regUser = function(username, password, email) {
+exports.reguser = function(username, password, email) {
+
+	var promise = new(events.EventEmitter);
+    
     var tenantData = JSON.stringify({
 	  "tenant": {
 	    "name": username,
@@ -22,7 +27,6 @@ exports.regUser = function(username, password, email) {
     // create new tenant
     var tenant_create_request = http.request(generateReqOptions('tenants'), function(tenant_response) {
     	tenant_response.on('data', function(chunk) {
-    		console.log(""+chunk);
 	    	var tenant_id = JSON.parse(chunk).tenant.id;
 	
 		    // create new user
@@ -33,20 +37,29 @@ exports.regUser = function(username, password, email) {
 				    // get admin role id
 				    var get_role_request = http.request(generateReqOptions('get_roles'), function(get_role_response) {
 				    	get_role_response.on('data', function(chunk) {
-					    	var roles = JSON.parse(chunk);
-					    	var adm_role_id;
-					    	for(var role in roles.roles) {
-					    		if(role.name == "admin")
-					    			adm_role_id = role.id;
-					    	}
+					    	var roles = JSON.parse(chunk).roles;
+					    	var adm_role = roles.filter(function(role) {
+					    		return role.name == "admin";
+					    	})[0];
 
-					    	if("undefined" !== adm_role_id) {
+					    	if("undefined" !== typeof adm_role) {
 							    // bind user to tenant using role admin
-							    var bind_user_request = http.request(generateReqOptions('roles'), function(roles_response) {
-									console.log("Successfully binded user "+username+" to tenant "+username);
-									console.log(roles_response.statusCode);
+							    var bind_user_request = http.request(generateReqOptions('roles', tenant_id, user_id, adm_role.id), function(roles_response) {
+							    	if(roles_response.statusCode == 200) {
+							    		console.log("Ok!");
+										promise.emit("registered", {
+											'userid': user_id,
+											'tenantid':tenant_id
+										});
+							    	} else {
+							    	    roles_response.on('data', function(chunk) {
+										    promise.emit("error", roles_response.statusCode+" "+chunk);
+							    	    });
+							    	}
 								});		
 								bind_user_request.end();
+					    	} else {
+							    promise.emit("error", "");
 					    	}
 						});//get_role_request.onData
 					});//get_role_request
@@ -59,7 +72,10 @@ exports.regUser = function(username, password, email) {
     }); //tenant_create_request
 	tenant_create_request.write(tenantData);
 	tenant_create_request.end();
-}
+	return promise;
+};
+
+util.inherits(exports.reguser, events.EventEmitter);
 
 var generateReqOptions = function(resource, tenantId, userId, roleId) {
 	var returnOptions = {
@@ -91,5 +107,3 @@ var generateReqOptions = function(resource, tenantId, userId, roleId) {
 
 	return returnOptions;
 }
-
-// regUser("dimm000", "crystal", "dimm@sky-way.ru");
