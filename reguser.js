@@ -7,23 +7,6 @@ exports.reguser = function(username, password, email) {
 
 	var promise = new(events.EventEmitter);
     
-    var tenantData = JSON.stringify({
-	  "tenant": {
-	    "name": username,
-	    "description": "",
-	    "enabled": true
-	  }
-	});
-
-    var userData = JSON.stringify({
-	  "user": {
-	    "name": username,
-	    "password": password,
-	    "email": email,
-	    "enabled": true
-	  }
-	});
-
     // create new tenant
     var tenant_create_request = http.request(generateReqOptions('tenants'), function(tenant_response) {
     	tenant_response.on('data', function(chunk) {
@@ -66,16 +49,41 @@ exports.reguser = function(username, password, email) {
 					get_role_request.end();
 		    	});//user_create_request onData
 			});//user_create_request
-			user_create_request.write(userData);
+			user_create_request.write(generateUserData(username, password, email, tenant_id));
 			user_create_request.end();
     	}); //tenant_create_request onData
     }); //tenant_create_request
-	tenant_create_request.write(tenantData);
+	tenant_create_request.write(generateTenantData(username));
 	tenant_create_request.end();
 	return promise;
 };
 
 util.inherits(exports.reguser, events.EventEmitter);
+
+var generateUserData = function(username, password, email, tenantId) {
+    var userData = {
+	  user: {
+	    name: username,
+	    password: password,
+	    email: email,
+	    enabled: true
+	  }
+	};
+	if("undefined" !== typeof tenantId)
+		userData.user.tenantId = tenantId;
+	return JSON.stringify(userData);
+};
+
+var generateTenantData = function(username) {
+    var tenantData = {
+	  tenant: {
+	    name: username,
+	    description: "",
+	    enabled: true
+	  }
+	};
+    return JSON.stringify(tenantData);
+};
 
 var generateReqOptions = function(resource, tenantId, userId, roleId) {
 	var returnOptions = {

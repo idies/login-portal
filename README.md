@@ -10,3 +10,5 @@ $ npm install && bower install && grunt
 
 # Open browser on http://localhost:8080
 ```
+
+(version of angular and angular-animate should be equal)

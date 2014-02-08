@@ -9,7 +9,8 @@ angular.module('angular-login', [
   'angular-login.register',
   'angular-login.error',
   // components
-  'ngAnimate'
+  'ngAnimate',
+  'ngGrid'
 ])
 .config(function ($urlRouterProvider, $httpProvider, $locationProvider) {
   $urlRouterProvider.otherwise('/');
