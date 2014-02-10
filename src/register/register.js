@@ -8,7 +8,7 @@ angular.module('angular-login.register', ['angular-login.grandfather'])
       accessLevel: accessLevels.anon
     });
 })
-.controller('RegisterController', function ($scope, $http, $timeout, $state) {
+.controller('RegisterController', function ($scope, $http, $state) {
   $scope.xhr = false;
   $scope.redirect = false;
 
@@ -24,9 +24,7 @@ angular.module('angular-login.register', ['angular-login.grandfather'])
       console.info('post success - ', data);
       $scope.xhr = false;
       $scope.redirect = true;
-      $timeout(function () {
-        $state.go('app.home');
-      }, 2000);
+      $state.go('app.home');
     })
     .error(function (data, status, headers, config) {
       if(data.errors) {

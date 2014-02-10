@@ -39,11 +39,10 @@ angular.module('angular-login.pages',
         'X-Auth-Token': CookieFactory.getCookie("token")
       }
     }).success(function(res) {
-      $scope.users = res.users;
       $scope.usersData = res.users;
-      // if (!$scope.$$phase) {
-      //   $scope.$apply();
-      // }  
+      if (!$scope.$$phase) {
+        $scope.$apply();
+      }  
     });
   }
 

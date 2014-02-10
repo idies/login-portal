@@ -100,6 +100,7 @@ require('http').createServer(function (req, res) {
                                 'X-Auth-Token':req.headers['x-auth-token']
                             }
                         }, function(delete_users_response) {
+                            delete_users_response.on('data', function(resp) {/*consume data*/});
                             if("undefined" === typeof tenantId) {
                                 res.writeHead(204);
                                 res.end();
@@ -113,6 +114,7 @@ require('http').createServer(function (req, res) {
                                             'X-Auth-Token':req.headers['x-auth-token']
                                         }
                                     }, function(delete_tenants_response) {
+                                        delete_tenants_response.on('data', function(resp) {/*consume data*/});
                                         res.writeHead(204);
                                         res.end();
                                     }
