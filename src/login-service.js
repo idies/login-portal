@@ -129,11 +129,25 @@ angular.module('loginService', [])
         // flag true on isLogged
         wrappedService.isLogged = true;
         // update userRole
-        // wrappedService.userRole = user.token.roles;
-        wrappedService.userRole = {
-            "bitMask": 4,
-            "title": "admin"
-          };
+
+        console.debug(user);
+        var userRole = userRoles.public;
+
+        // For now ONLY admin or user. (in theory can be both, then modify userRole bitmask)
+        user.access.user.roles.forEach(function(role) {
+          switch(role.name) {
+            case "admin":
+              userRole = userRoles.admin;
+              break;
+            case "user":
+              userRole = userRoles.user;
+              break;
+            default:
+              break;
+          }
+        });
+
+        wrappedService.userRole = userRole;
 
         if("undefined" != typeof $location.search().callbackUrl) {
           window.location = $location.search().callbackUrl+(($location.search().callbackUrl.indexOf("?") > 0)?"&":"?")+

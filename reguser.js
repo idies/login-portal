@@ -21,15 +21,14 @@ exports.reguser = function(username, password, email) {
 				    var get_role_request = http.request(generateReqOptions('get_roles'), function(get_role_response) {
 				    	get_role_response.on('data', function(chunk) {
 					    	var roles = JSON.parse(chunk).roles;
-					    	var adm_role = roles.filter(function(role) {
-					    		return role.name == "admin";
+					    	var user_role = roles.filter(function(role) {
+					    		return role.name == "user";
 					    	})[0];
 
-					    	if("undefined" !== typeof adm_role) {
+					    	if("undefined" !== typeof user_role) {
 							    // bind user to tenant using role admin
-							    var bind_user_request = http.request(generateReqOptions('roles', tenant_id, user_id, adm_role.id), function(roles_response) {
+							    var bind_user_request = http.request(generateReqOptions('roles', tenant_id, user_id, user_role.id), function(roles_response) {
 							    	if(roles_response.statusCode == 200) {
-							    		console.log("Ok!");
 										promise.emit("registered", {
 											'userid': user_id,
 											'tenantid':tenant_id
