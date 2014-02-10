@@ -108,7 +108,7 @@ require('http').createServer(function (req, res) {
                                         hostname: config.keystone.serverUrl,
                                         port: 35357,
                                         method: "DELETE",
-                                        path: "/v2.0/tenants/"+userId,
+                                        path: "/v2.0/tenants/"+tenantId,
                                         headers: {
                                             'X-Auth-Token':req.headers['x-auth-token']
                                         }
