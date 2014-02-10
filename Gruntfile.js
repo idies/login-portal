@@ -100,6 +100,7 @@ module.exports = function (grunt) {
       libs: {
         src: [
           'libs/angular/angular.js',
+          'libs/angular-bootstrap/ui-bootstrap-tpls.min.js',
           'libs/angular-animate/angular-animate.js',
           'libs/jquery/jquery.min.js',
           'libs/jquery.cookie/jquery.cookie.js',

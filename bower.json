@@ -1,5 +1,5 @@
 {
-  "name": "angular-login-example",
+  "name": "idies-login-portal",
   "dependencies": {
     "bootstrap-ui": "~0.6.0",
     "angular": "~1.2",
@@ -8,6 +8,7 @@
     "bootstrap": "~3.0.2",
     "jquery.cookie": "~1.4.0",
     "ng-grid-bower": "~2.0.7",
-    "angular-confirm-click": "~0.0.1"
+    "angular-confirm-click": "~0.0.1",
+    "angular-bootstrap": "~0.10.0"
   }
 }

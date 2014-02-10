@@ -1,4 +1,25 @@
 <div class="jumbotron">
-  <h1>Page for registered users</h1>
-  <p class="text-info">Both <b>users</b> and <b>admins</b> can access to this page!</p>
+	<h1>Page for registered users</h1>
+	<div class="panel panel-default">
+		<div class="panel-body">Username: {{ user.access.user.name }}, Id: {{ user.access.user.id }}</div>
+	</div>
+
+
+	<div class="panel panel-default">
+		<div class="panel-heading">Services <span class="badge">{{user.access.serviceCatalog.length}}</span></div>
+		<accordion close-others="true">
+			<accordion-group heading="{{service.name}} ({{service.type}})" ng-repeat="service in user.access.serviceCatalog">
+				<div ng-repeat="endpoint in service.endpoints">
+					<div class="panel panel-default"> AdminURL: {{endpoint.adminURL}}</div>
+					<div class="panel panel-default"> InternalURL: {{endpoint.internalURL}}</div>
+					<div class="panel panel-default"> PublicURL: {{endpoint.publicURL}}</div>
+				</div>
+			</accordion-group>
+		</accordion>
+	</div>
+
+
+
+
+
 </div>

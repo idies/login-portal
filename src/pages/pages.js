@@ -1,6 +1,7 @@
 angular.module('angular-login.pages', 
   ['angular-login.grandfather',
-  'confirmClick'
+  'confirmClick',
+  'ui.bootstrap'
   ])
 .config(function ($stateProvider) {
   $stateProvider
@@ -13,6 +14,7 @@ angular.module('angular-login.pages',
     .state('app.user', {
       url: '/user',
       templateUrl: 'pages/user.tpl.html',
+      controller: 'UserController',
       accessLevel: accessLevels.user
     });
 }).controller('AdminController', function ($scope, $http, CookieFactory) {
@@ -60,6 +62,12 @@ angular.module('angular-login.pages',
     });
   };
 
+}).controller('UserController', function ($scope, $http, CookieFactory) {
+  $http({
+    url: '/keystone/v2.0/tokens/'+CookieFactory.getCookie("token"),
+    method: "GET"
+  }).success(function(res) {
+    $scope.user = res;
+  });
+
 });
-
-
