@@ -24,6 +24,7 @@ angular.module('angular-login.pages',
   $scope.gridOptions = { 
     data: 'usersData',
     enableRowSelection: false,
+    showFilter: true,
     columnDefs: [
       {field: 'name', displayName: 'Username'},
       {field: 'email', displayName: 'Email'},
