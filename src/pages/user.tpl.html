@@ -1,7 +1,22 @@
 <div class="jumbotron">
 	<h1>Page for registered users</h1>
 	<div class="panel panel-default">
-		<div class="panel-body">Username: {{ user.access.user.name }}, Id: {{ user.access.user.id }}</div>
+		<div class="panel-heading"><h3 class="panel-title">User Info</h3></div>
+		<div class="panel-body">
+			Username: {{ user.access.user.name }}<br/>
+			Id: {{ user.access.user.id }}
+		</div>
+
+		<div class="panel-heading"><h3 class="panel-title">Tenant Info</h3></div>
+		<div class="panel-body">
+			Name: {{ user.access.token.tenant.name }}<br/>
+			Description: {{ user.access.token.tenant.description }}<br/>
+		</div>
+
+		<div class="panel-heading"><h3 class="panel-title">Tenant Properties</h3></div>
+		<div class="panel-body" ng-repeat="(name, value) in user.access.token.tenant.properties">
+			{{ name }}: {{value}}
+		</div>
 	</div>
 
 
