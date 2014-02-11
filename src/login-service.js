@@ -188,6 +188,7 @@ angular.module('loginService', [])
             }
           },
           function reject(httpObj) {
+            self.doneLoading = true;
             checkUser.reject(httpObj.status.toString());
           }
         );
