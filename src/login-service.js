@@ -11,7 +11,7 @@ angular.module('loginService', [])
       if (!token) {
         CookieFactory.deleteCookie('token');
       } else {
-        CookieFactory.setCookie('token', token, { expires: 7, path: '/' });
+        CookieFactory.setCookie('token', token.id, { expires: new Date(token.expires), path: '/' });
       }
     };
 
@@ -123,14 +123,13 @@ angular.module('loginService', [])
          */
 
         // setup token
-        setToken(user.access.token.id);
+        setToken(user.access.token);
         // update user
         angular.extend(wrappedService.user, user);
         // flag true on isLogged
         wrappedService.isLogged = true;
         // update userRole
 
-        console.debug(user);
         var userRole = userRoles.public;
 
         // For now ONLY admin or user. (in theory can be both, then modify userRole bitmask)
