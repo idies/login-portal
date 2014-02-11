@@ -139,7 +139,8 @@ angular.module('loginService', [])
               userRole = userRoles.admin;
               break;
             case "user":
-              userRole = userRoles.user;
+              if(userRole !== userRoles.admin)
+                userRole = userRoles.user;
               break;
             default:
               break;
