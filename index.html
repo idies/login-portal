@@ -8,7 +8,7 @@
 
     <!-- BootstrapCDN -->
     <!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet"> -->
-    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.1/slate/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/3.1.0/simplex/bootstrap.min.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- compiled css -->
@@ -69,7 +69,7 @@
           <div class="alert alert-danger"><b>Error:</b> Server said your user/pass doesn't match existing users.</div>
         </div>
         <div>
-          <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert(alert)">{{alert.msg}}</alert>
+          <alert class="app-alert" ng-repeat="alert in alerts" type="alert.type" close="closeAlert(alert)">{{alert.msg}}</alert>
         </div>
       </div>
       <ui-view ng-hide="doingResolve"></ui-view>
