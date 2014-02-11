@@ -17,6 +17,13 @@
 		<div class="panel-body" ng-repeat="(name, value) in user.access.token.tenant.properties">
 			{{ name }}: {{value}}
 		</div>
+
+		<div class="panel-heading"><h3 class="panel-title">Token Info</h3></div>
+		<div class="panel-body">
+			Issued: {{ user.access.token.issued_at }}<br/>
+			Id: {{ user.access.token.id }}<br/>
+			Expires: {{ user.access.token.expires }}<br/>
+		</div>
 	</div>
 
 
