@@ -19,7 +19,7 @@ angular.module('angular-login.pages',
     });
 }).controller('AdminController', function ($scope, $http, CookieFactory) {
   $scope.usersData = '';
-  $scope.deleteButton = '<button type="button" class="btn btn-danger" confirm-click="deleteUser(row.entity.id+\'|\'+row.entity.tenantId)" confirm-message="Are you sure?">Delete</button>';
+  $scope.deleteButton = '<button type="button" class="btn btn-danger btn-xs" confirm-click="deleteUser(row.entity.id+\'|\'+row.entity.tenantId)" confirm-message="Are you sure?">Delete</button>';
 
   $scope.gridOptions = { 
     data: 'usersData',
