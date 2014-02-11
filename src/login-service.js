@@ -215,25 +215,3 @@ angular.module('loginService', [])
     return wrappedService;
   };
 });
-
-angular.module('loginService')
-.factory('CookieFactory', function(){
-
-    return {
-        getCookie: function(name){
-            return $.cookie(name);
-        },
-
-        getAllCookies: function(){
-            return $.cookie();
-        },
-
-        setCookie: function(name, value, param){
-            return $.cookie(name, value, param);
-        },
-
-        deleteCookie: function(name){
-            return $.removeCookie(name);
-        }
-    }
-});
