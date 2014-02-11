@@ -84,7 +84,7 @@ require('http').createServer(function (req, res) {
                     break;
                 case "DELETE":
                     var pathSegms = url.path.split('/');
-                    var userId = pathSegms[pathSegms.length-1];
+                    var userId = decodeURIComponent(pathSegms[pathSegms.length-1]);
                     var tenantId;
                     if(userId.indexOf('|') > 0) {
                         var ids = userId.split('|');
