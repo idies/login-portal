@@ -10,7 +10,8 @@ angular.module('angular-login', [
   'angular-login.error',
   // components
   'ngAnimate',
-  'ngGrid'
+  'ngGrid',
+  'angular-login.services'
 ])
 .config(function ($urlRouterProvider, $httpProvider, $locationProvider) {
   $urlRouterProvider.otherwise('/');
@@ -31,7 +32,8 @@ angular.module('angular-login', [
   $rootScope.$on('$stateChangeError', resolveDone);
   $rootScope.$on('$statePermissionError', resolveDone);
 })
-.controller('BodyController', function ($scope, $state, $stateParams, loginService, $http, $timeout) {
+.controller('BodyController', function ($scope, $state, $stateParams, loginService, $http, $timeout, AppAlert) {
+
   // Expose $state and $stateParams to the <body> tag
   $scope.$state = $state;
   $scope.$stateParams = $stateParams;
@@ -73,4 +75,9 @@ angular.module('angular-login', [
     // loginService.logoutUser($http.get('/logout'));
     loginService.logoutUser();
   };
+
+  $scope.closeAlert = function(alert) {
+    AppAlert.closeAlert(alert);
+  }
+
 });
