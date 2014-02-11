@@ -3,7 +3,7 @@ angular.module('loginService', [])
   var errorState = 'app.error',
       logoutState = 'app.home';
 
-  this.$get = function ($rootScope, $http, $q, $state, $location, CookieFactory) {
+  this.$get = function ($rootScope, $http, $q, $state, $location, CookieFactory, AppAlert) {
 
     var userToken = CookieFactory.getCookie("token");
 
@@ -150,6 +150,7 @@ angular.module('loginService', [])
         wrappedService.userRole = userRole;
 
         if("undefined" != typeof $location.search().callbackUrl) {
+          AppAlert.add('info', "Redirecting...");
           window.location = $location.search().callbackUrl+(($location.search().callbackUrl.indexOf("?") > 0)?"&":"?")+
             "token="+CookieFactory.getCookie('token');
         }
