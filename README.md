@@ -10,8 +10,7 @@ Install http://nodejs.org
 
 Install bower & grunt
 ```bash
-$ npm install bower -g
-$ npm install grunt-cli
+$ npm install bower grunt-cli -g
 ```
 
 To launch portal in dev mode:
