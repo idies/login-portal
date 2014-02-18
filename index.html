@@ -69,9 +69,9 @@
         <div class="login-error" ng-class="{ 'active': login.wrong }">
           <div class="alert alert-danger"><b>Error:</b> Server said your user/pass doesn't match existing users.</div>
         </div>
-        <div>
-          <alert class="app-alert" ng-repeat="alert in alerts" type="alert.type" close="closeAlert(alert)">{{alert.msg}}</alert>
-        </div>
+      </div>
+      <div>
+        <alert class="app-alert" ng-repeat="alert in alerts" type="alert.type" close="closeAlert(alert)">{{alert.msg}}</alert>
       </div>
       <ui-view ng-hide="doingResolve"></ui-view>
       <div class="jumbotron loading-jumbo" ng-show="doingResolve">

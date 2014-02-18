@@ -32,7 +32,7 @@ angular.module('angular-login', [
   $rootScope.$on('$stateChangeError', resolveDone);
   $rootScope.$on('$statePermissionError', resolveDone);
 })
-.controller('BodyController', function ($scope, $state, $stateParams, loginService, $http, $timeout, AppAlert) {
+.controller('BodyController', function ($scope, $state, $stateParams, loginService, $http, $timeout, AppAlert, $location) {
 
   // Expose $state and $stateParams to the <body> tag
   $scope.$state = $state;
@@ -44,6 +44,11 @@ angular.module('angular-login', [
     working: false,
     wrong: false
   };
+
+  if(typeof $location.search().message !== "undefined") {
+    AppAlert.add('info', $location.search().message);
+  }
+
   $scope.loginMe = function () {
     var loginPromise = $http.post('/keystone/v2.0/tokens', 
       {
