@@ -37,6 +37,8 @@ angular.module('angular-login', [
   // Expose $state and $stateParams to the <body> tag
   $scope.$state = $state;
   $scope.$stateParams = $stateParams;
+  
+  $scope.isCollapsed = false; // open by default
 
   // loginService exposed and a new Object containing login user/pwd
   $scope.ls = loginService;
