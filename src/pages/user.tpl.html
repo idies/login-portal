@@ -5,7 +5,7 @@
 		<div class="panel-header"><h3>Available services</h3></div>
 		<div ng-repeat="service in user.access.serviceCatalog">
 			<div class="panel-body" ng-repeat="endpoint in service.endpoints">
-				<a href="{{endpoint.publicURL | token}}" target="_blank">{{service.name}} ({{service.type}})</a>
+				<a href="{{endpoint.publicURL | token}}">{{service.name}} ({{service.type}})</a>
 			</div>
 		</div>
 	</div>
