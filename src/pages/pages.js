@@ -70,5 +70,8 @@ angular.module('angular-login.pages',
   }).success(function(res) {
     $scope.user = res;
   });
-
+}).filter('token', function(CookieFactory){
+  return function(text) {
+    return text.replace(/\{token\}/g, CookieFactory.getCookie("token"));
+  }
 });
