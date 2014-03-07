@@ -46,7 +46,7 @@ require('http').createServer(function (req, res) {
                     res.writeHead(500, {
                         'Content-Length': error.length,
                         'Content-Type': 'application/json' });
-                    res.write(error);
+                    res.write(JSON.stringify({"error":error}));
                     res.end();
                 });
             });
