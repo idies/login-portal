@@ -9,7 +9,8 @@
     "example"
   ],
   "scripts": {
-    "start": "grunt"
+    "start": "grunt",
+    "test": "vows test/*-test.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,8 @@
     "grunt-concat-sourcemap": "~0.3.1",
     "grunt-forever": "~0.4.1",
     "node-static": "~0.7.3",
-    "cookies": "~0.4.0"
+    "cookies": "~0.4.0",
+    "api-easy": "0.2.x",
+    "vows": "~0.7.0"
   }
 }
