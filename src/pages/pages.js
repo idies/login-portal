@@ -63,6 +63,89 @@ angular.module('angular-login.pages',
     });
   };
 
+  $scope.groupSelection = [], $scope.groupUserSelection = [], $scope.userSelection = [];
+  $scope.groupsData = '', groupUsersData = '', usersData = '';
+  $scope.groupsGrid = { 
+    data: 'groupsData',
+    enableRowSelection: true,
+    showFilter: false,
+    columnDefs: [
+      {field: 'name', displayName: 'Name'},
+      {field:'id', displayName:'ID'}
+    ],
+    multiSelect: false,
+    selectedItems: $scope.groupSelection,
+    afterSelectionChange: function(data) {
+      if("undefined" !== typeof $scope.groupSelection[0]) { // fires twice: for select and for unselect, need to catch only select
+        var groupId = $scope.groupSelection[0].id;
+        $http({
+          method: 'GET',
+          url: '/keystone/v3/groups/'+groupId+"/users",
+          headers: {
+            'X-Auth-Token': CookieFactory.getCookie("token")
+          }
+        }).success(function(res) {
+          $scope.groupUsersData = res.users;
+          if (!$scope.$$phase) {
+            $scope.$apply();
+          }  
+        });
+      }
+    }
+  };
+
+  $scope.groupUsersGrid = {
+    data: 'groupUsersData',
+    enableRowSelection: true,
+    columnDefs: [
+      {field: 'name', displayName: 'Name'},
+      {field:'id', displayName:'ID'}
+    ],
+    selectedItems: $scope.groupUserSelection,
+    multiSelect: false
+  }
+
+  $scope.usersGrid = {
+    data: 'usersData',
+    enableRowSelection: true,
+    columnDefs: [
+      {field: 'name', displayName: 'Name'},
+      {field:'id', displayName:'ID'}
+    ],
+    selectedItems: $scope.userSelection,
+    multiSelect: false
+  }
+
+  $http({method: 'GET', url: '/keystone/v3/groups',
+    headers: {
+      'X-Auth-Token': CookieFactory.getCookie("token")
+    }
+  }).success(function(res) {
+    $scope.groupsData = res.groups;
+    if (!$scope.$$phase) {
+      $scope.$apply();
+    }  
+  });
+
+  $http({method: 'GET', url: '/keystone/v3/users',
+    headers: {
+      'X-Auth-Token': CookieFactory.getCookie("token")
+    }
+  }).success(function(res) {
+    $scope.usersData = res.users;
+    if (!$scope.$$phase) {
+      $scope.$apply();
+    }  
+  });
+
+  $scope.addUserToGroup = function() {
+    console.debug($scope.userSelection[0]);
+  }
+
+  $scope.removeUserFromGroup = function() {
+    console.debug($scope.groupUserSelection[0]);
+  }
+
 }).controller('UserController', function ($scope, $http, CookieFactory) {
   $http({
     url: '/keystone/v2.0/tokens/'+CookieFactory.getCookie("token"),
