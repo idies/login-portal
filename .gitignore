@@ -24,3 +24,5 @@ build/
 dest/
 
 config.js
+test/config.js
+.gitignore

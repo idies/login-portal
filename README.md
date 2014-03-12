@@ -26,3 +26,12 @@ $ npm install && bower install && grunt
 (version of angular and angular-animate should be equal)
 
 Grunt compiles the portal into build folder, which can be relocated to any web server for production use ('grunt build').
+
+Testing
+-------
+
+Test is provided by http://vowsjs.org/ tool.
+
+To test: start the service using 'grunt' or 'node run.js'
+
+Then run 'vows' from project's folder.

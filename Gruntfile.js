@@ -55,12 +55,14 @@ module.exports = function (grunt) {
       },
       server: {
         files: 'run.js',
-        tasks: ['forever:restart']
+        tasks: ['forever:server1:restart']
       }
     },
     forever: {
-      options: {
-        index: 'run.js'
+      server1: {
+        options: {
+          index: 'run.js'
+        }
       }
     },
     'git-describe': {
