@@ -8,7 +8,6 @@
     "bootstrap": "~3.1.0",
     "jquery.cookie": "~1.4.0",
     "ng-grid-bower": "~2.0.7",
-    "angular-confirm-click": "~0.0.1",
     "angular-bootstrap": "~0.10.0"
   }
 }

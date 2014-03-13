@@ -59,4 +59,49 @@ angular.module('angular-login.directives', [])
       });
     }
   };
-});
+}).directive('confirmClick', function($timeout) {
+    return {
+      scope: {},
+      link: function(scope, element, attrs) {
+        var actionText, promise, textWidth;
+        actionText = element.html();
+        textWidth = null;
+        promise = null;
+        scope.confirmingAction = false;
+        element.css({
+          transition: 'all 1s'
+        });
+        scope.$watch('confirmingAction', function(newVal, oldVal) {
+          if ((newVal === oldVal && oldVal === false)) {
+            textWidth = element[0].offsetWidth;
+          }
+          if (scope.confirmingAction) {
+            element.text(attrs.confirmMessage);
+            return element.css({
+              maxWidth: '300px'
+            });
+          } else {
+            element.html(actionText);
+            return element.css({
+              maxWidth: textWidth
+            });
+          }
+        });
+        return element.bind('click', function() {
+          if (!scope.confirmingAction) {
+            scope.$apply(function() {
+              return scope.confirmingAction = true;
+            });
+            return promise = $timeout(function() {
+              return scope.confirmingAction = false;
+            }, 1500);
+          } else {
+            $timeout.cancel(promise);
+            element.html(actionText);
+            scope.confirmingAction = false;
+            return scope.$parent.$apply(attrs.confirmClick);
+          }
+        });
+      }
+    };
+  });
