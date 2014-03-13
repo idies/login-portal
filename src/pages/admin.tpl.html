@@ -5,13 +5,16 @@
 	  <div class="gridStyle" ng-grid="gridOptions"></div>
 	</div>
 	<div class="panel panel-default">
-	  <div class="panel-heading">Manage groups</div>
+	  <div class="panel-heading form-inline">Manage groups
+	  	<input type="text" class="form-control input-sm" placeholder="Group name" style="width: 200px; margin-left: 30px;" ng-model="newGroupName"></input>
+	  	<button type="button" class="btn btn-xs btn-success" ng-click="addGroup(newGroupName)"><i class="fa fa-plus"></i> Add group</button>
+	  </div>
 	  <div class="gridStyle" ng-grid="groupsGrid"></div>
 	  <div class="panel row">
 	      <div class="gridStyle col-md-5" ng-grid="groupUsersGrid"></div>
-		  <div class="col-md-2">
-		  	<button type="button" class="default" ng-click="addUserToGroup()"><i class="fa fa-chevron-left"></i></button>
-		  	<button type="button" class="default" ng-click="removeUserFromGroup()"><i class="fa fa-chevron-right"></i></button>
+		  <div class="col-md-2" align="center">
+		  	<button type="button" class="btn btn-default" ng-click="addUserToGroup()"><i class="fa fa-chevron-left"></i></button>
+		  	<button type="button" class="btn btn-default" ng-click="removeUserFromGroup()"><i class="fa fa-chevron-right"></i></button>
 		  </div>
 		  <div class="gridStyle col-md-5" ng-grid="usersGrid"></div>
 	  </div>

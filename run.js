@@ -50,96 +50,62 @@ require('http').createServer(function (req, res) {
                     res.end();
                 });
             });
-        } else if(url.path.indexOf("/users") == 0) {
-            switch(req.method) {
-                case "GET":
-                    // return users list for admin interface; requires admin token in request
-                    var get_users_request = http.request({
-                            hostname: config.keystone.serverUrl,
-                            port: 35357,
-                            method: "GET",
-                            path: "/v2.0/users",
-                            headers: {
-                                'X-Auth-Token':req.headers['x-auth-token'],
-                                'Content-Type':'application/json'
-                            }
-                        }, function(get_users_response) {
-                            get_users_response.on('data', function(chunk) {
-                                res.write(chunk);
-                            });
-
-                            get_users_response.on('end', function(chunk) {
-                                res.end();
-                            });
-                        }
-                    );
-                    get_users_request.on('error', function(error) {
-                        res.writeHead(500, {
-                            'Content-Length': error.message.length,
-                            'Content-Type': 'application/json' });
-                        res.write(error.message);
-                        res.end();
-                    });
-                    get_users_request.end();
-                    break;
-                case "DELETE":
-                    var pathSegms = url.path.split('/');
-                    var userId = decodeURIComponent(pathSegms[pathSegms.length-1]);
-                    var tenantId;
-                    if(userId.indexOf('|') > 0) {
-                        var ids = userId.split('|');
-                        userId = ids[0];
-                        tenantId = ids[1];
+        } else if(url.path.indexOf("/users") == 0 && req.method == "DELETE") {
+            var pathSegms = url.path.split('/');
+            var userId = decodeURIComponent(pathSegms[pathSegms.length-1]);
+            var tenantId;
+            if(userId.indexOf('|') > 0) {
+                var ids = userId.split('|');
+                userId = ids[0];
+                tenantId = ids[1];
+            }
+            var delete_users_request = http.request({
+                    hostname: config.keystone.serverUrl,
+                    port: 35357,
+                    method: "DELETE",
+                    path: "/v2.0/users/"+userId,
+                    headers: {
+                        'X-Auth-Token':req.headers['x-auth-token']
                     }
-                    var delete_users_request = http.request({
-                            hostname: config.keystone.serverUrl,
-                            port: 35357,
-                            method: "DELETE",
-                            path: "/v2.0/users/"+userId,
-                            headers: {
-                                'X-Auth-Token':req.headers['x-auth-token']
-                            }
-                        }, function(delete_users_response) {
-                            delete_users_response.on('data', function(resp) {/*consume data*/});
-                            if("undefined" === typeof tenantId) {
+                }, function(delete_users_response) {
+                    delete_users_response.on('data', function(resp) {/*consume data*/});
+                    if("undefined" === typeof tenantId) {
+                        res.writeHead(204);
+                        res.end();
+                    } else {
+                        var delete_tenants_request = http.request({
+                                hostname: config.keystone.serverUrl,
+                                port: 35357,
+                                method: "DELETE",
+                                path: "/v2.0/tenants/"+tenantId,
+                                headers: {
+                                    'X-Auth-Token':req.headers['x-auth-token']
+                                }
+                            }, function(delete_tenants_response) {
+                                delete_tenants_response.on('data', function(resp) {/*consume data*/});
                                 res.writeHead(204);
                                 res.end();
-                            } else {
-                                var delete_tenants_request = http.request({
-                                        hostname: config.keystone.serverUrl,
-                                        port: 35357,
-                                        method: "DELETE",
-                                        path: "/v2.0/tenants/"+tenantId,
-                                        headers: {
-                                            'X-Auth-Token':req.headers['x-auth-token']
-                                        }
-                                    }, function(delete_tenants_response) {
-                                        delete_tenants_response.on('data', function(resp) {/*consume data*/});
-                                        res.writeHead(204);
-                                        res.end();
-                                    }
-                                );
-                                delete_tenants_request.on('error', function(error) {
-                                    res.writeHead(500, {
-                                        'Content-Length': error.message.length,
-                                        'Content-Type': 'application/json' });
-                                    res.write(error.message);
-                                    res.end();
-                                });
-                                delete_tenants_request.end();
                             }
-                        }
-                    );
-                    delete_users_request.on('error', function(error) {
-                        res.writeHead(500, {
-                            'Content-Length': error.message.length,
-                            'Content-Type': 'application/json' });
-                        res.write(error.message);
-                        res.end();
-                    });
-                    delete_users_request.end();
-                    break;
-            }
+                        );
+                        delete_tenants_request.on('error', function(error) {
+                            res.writeHead(500, {
+                                'Content-Length': error.message.length,
+                                'Content-Type': 'application/json' });
+                            res.write(error.message);
+                            res.end();
+                        });
+                        delete_tenants_request.end();
+                    }
+                }
+            );
+            delete_users_request.on('error', function(error) {
+                res.writeHead(500, {
+                    'Content-Length': error.message.length,
+                    'Content-Type': 'application/json' });
+                res.write(error.message);
+                res.end();
+            });
+            delete_users_request.end();
         } else {
             fileServer.serve(req, res)
             .on("error", function(error) {

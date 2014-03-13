@@ -18,7 +18,9 @@ angular.module('angular-login.pages',
       accessLevel: accessLevels.user
     });
 }).controller('AdminController', function ($scope, $http, CookieFactory) {
-  $scope.usersData = '';
+  $scope.groupSelection = [], $scope.groupUserSelection = [], $scope.userSelection = [];
+  $scope.groupsData = '', groupUsersData = '', usersData = '', usersData2 = '' /*for adding to groups*/;
+
   $scope.deleteButton = '<button type="button" class="btn btn-danger btn-xs" confirm-click="deleteUser(row.entity.id+\'|\'+row.entity.tenantId)" confirm-message="Are you sure?">Delete</button>';
 
   $scope.gridOptions = { 
@@ -37,7 +39,7 @@ angular.module('angular-login.pages',
   $scope.reloadUsers = function() {
     $http({
       method: 'GET',
-      url: '/users',
+      url: '/keystone/v3/users',
       headers: {
         'X-Auth-Token': CookieFactory.getCookie("token")
       }
@@ -63,8 +65,6 @@ angular.module('angular-login.pages',
     });
   };
 
-  $scope.groupSelection = [], $scope.groupUserSelection = [], $scope.userSelection = [];
-  $scope.groupsData = '', groupUsersData = '', usersData = '';
   $scope.groupsGrid = { 
     data: 'groupsData',
     enableRowSelection: true,
@@ -77,19 +77,7 @@ angular.module('angular-login.pages',
     selectedItems: $scope.groupSelection,
     afterSelectionChange: function(data) {
       if("undefined" !== typeof $scope.groupSelection[0]) { // fires twice: for select and for unselect, need to catch only select
-        var groupId = $scope.groupSelection[0].id;
-        $http({
-          method: 'GET',
-          url: '/keystone/v3/groups/'+groupId+"/users",
-          headers: {
-            'X-Auth-Token': CookieFactory.getCookie("token")
-          }
-        }).success(function(res) {
-          $scope.groupUsersData = res.users;
-          if (!$scope.$$phase) {
-            $scope.$apply();
-          }  
-        });
+        $scope.reloadMembers();
       }
     }
   };
@@ -106,7 +94,7 @@ angular.module('angular-login.pages',
   }
 
   $scope.usersGrid = {
-    data: 'usersData',
+    data: 'usersData2',
     enableRowSelection: true,
     columnDefs: [
       {field: 'name', displayName: 'Name'},
@@ -116,34 +104,88 @@ angular.module('angular-login.pages',
     multiSelect: false
   }
 
-  $http({method: 'GET', url: '/keystone/v3/groups',
-    headers: {
-      'X-Auth-Token': CookieFactory.getCookie("token")
-    }
-  }).success(function(res) {
-    $scope.groupsData = res.groups;
-    if (!$scope.$$phase) {
-      $scope.$apply();
-    }  
-  });
+  $scope.reloadGroups = function() {
+    $http({method: 'GET', url: '/keystone/v3/groups',
+      headers: {
+        'X-Auth-Token': CookieFactory.getCookie("token")
+      }
+    }).success(function(res) {
+      $scope.groupsData = res.groups;
+      if (!$scope.$$phase) {
+        $scope.$apply();
+      }  
+    });
+  };
 
-  $http({method: 'GET', url: '/keystone/v3/users',
-    headers: {
-      'X-Auth-Token': CookieFactory.getCookie("token")
-    }
-  }).success(function(res) {
-    $scope.usersData = res.users;
-    if (!$scope.$$phase) {
-      $scope.$apply();
-    }  
-  });
+  $scope.reloadGroups();
+  
+  $scope.reloadMembers = function() {
+    var groupId = $scope.groupSelection[0].id;
+    $http({
+      method: 'GET',
+      url: '/keystone/v3/groups/'+groupId+"/users",
+      headers: {
+        'X-Auth-Token': CookieFactory.getCookie("token")
+      }
+    }).success(function(res) {
+      $scope.groupUsersData = res.users;
+
+      $http({method: 'GET', url: '/keystone/v3/users',
+        headers: {
+          'X-Auth-Token': CookieFactory.getCookie("token")
+        }
+      }).success(function(res) {
+        $scope.usersData2 = res.users.filter(function(user) {
+          for(var i=0; i<$scope.groupUsersData.length; i++) {
+            if($scope.groupUsersData[i].id == user.id) {
+              return false;
+            }
+          }
+          return true;
+        });
+        if (!$scope.$$phase) {
+          $scope.$apply();
+        }  
+      });
+    });
+
+  }
 
   $scope.addUserToGroup = function() {
-    console.debug($scope.userSelection[0]);
+    $http({method: 'PUT', url: '/keystone/v3/groups/'+$scope.groupSelection[0].id+"/users/"+$scope.userSelection[0].id,
+      headers: {
+        'X-Auth-Token': CookieFactory.getCookie("token")
+      }
+    }).success(function(res) {
+      $scope.reloadMembers();
+    });
   }
 
   $scope.removeUserFromGroup = function() {
-    console.debug($scope.groupUserSelection[0]);
+    $http({method: 'DELETE', url: '/keystone/v3/groups/'+$scope.groupSelection[0].id+"/users/"+$scope.groupUserSelection[0].id,
+      headers: {
+        'X-Auth-Token': CookieFactory.getCookie("token")
+      }
+    }).success(function(res) {
+      $scope.reloadMembers();
+    });
+  }
+
+  $scope.addGroup = function(groupName) {
+    var newGroupData = {
+          "group": {
+              "name": groupName
+          }
+      };
+
+    $http({method: 'POST', url: '/keystone/v3/groups/',
+      headers: {
+        'X-Auth-Token': CookieFactory.getCookie("token")
+      },
+      data: JSON.stringify(newGroupData)
+    }).success(function(res) {
+      $scope.reloadGroups();
+    });
   }
 
 }).controller('UserController', function ($scope, $http, CookieFactory) {

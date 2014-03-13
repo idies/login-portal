@@ -104,7 +104,7 @@ module.exports = function (grunt) {
           'libs/angular/angular.js',
           'libs/angular-bootstrap/ui-bootstrap-tpls.min.js',
           'libs/angular-animate/angular-animate.js',
-          'libs/jquery/jquery.min.js',
+          'libs/jquery/dist/jquery.min.js',
           'libs/jquery.cookie/jquery.cookie.js',
           'libs/angular-ui-router/release/angular-ui-router.js',
           'libs/ng-grid-bower/ng-grid.min.js',
