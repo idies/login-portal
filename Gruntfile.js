@@ -107,8 +107,7 @@ module.exports = function (grunt) {
           'libs/jquery/dist/jquery.min.js',
           'libs/jquery.cookie/jquery.cookie.js',
           'libs/angular-ui-router/release/angular-ui-router.js',
-          'libs/ng-grid-bower/ng-grid.min.js',
-          'libs/angular-confirm-click/dist/confirmClick.js'
+          'libs/ng-grid-bower/ng-grid.min.js'
         ],
         dest: 'build/libs.js'
       }

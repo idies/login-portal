@@ -1,6 +1,5 @@
 angular.module('angular-login.pages', 
   ['angular-login.grandfather',
-  'confirmClick',
   'ui.bootstrap'
   ])
 .config(function ($stateProvider) {
@@ -18,21 +17,20 @@ angular.module('angular-login.pages',
       accessLevel: accessLevels.user
     });
 }).controller('AdminController', function ($scope, $http, CookieFactory) {
-  $scope.groupSelection = [], $scope.groupUserSelection = [], $scope.userSelection = [];
+  $scope.groupSelection = [], $scope.groupUserSelection = [], $scope.userSelection = [], $scope.userSelection2 = [];
   $scope.groupsData = '', groupUsersData = '', usersData = '', usersData2 = '' /*for adding to groups*/;
-
-  $scope.deleteButton = '<button type="button" class="btn btn-danger btn-xs" confirm-click="deleteUser(row.entity.id+\'|\'+row.entity.tenantId)" confirm-message="Are you sure?">Delete</button>';
 
   $scope.gridOptions = { 
     data: 'usersData',
-    enableRowSelection: false,
+    enableRowSelection: true,
+    selectedItems: $scope.userSelection,
+    multiSelect: false,
     showFilter: true,
     columnDefs: [
       {field: 'name', displayName: 'Username'},
       {field: 'email', displayName: 'Email'},
       {field:'id', displayName:'User ID'},
-      {field:'tenantId', displayName:'Tenant ID'},
-      {displayName:'', cellTemplate: $scope.deleteButton, width: "110px"}
+      {field:'default_project_id', displayName:'Tenant ID'}
     ]
   };
 
@@ -53,7 +51,11 @@ angular.module('angular-login.pages',
 
   $scope.reloadUsers();
 
-  $scope.deleteUser = function (userId) {
+  $scope.deleteUser = function () {
+    if("undefined" === typeof $scope.userSelection[0])
+      return;
+    
+    var userId = $scope.userSelection[0].id+'|'+$scope.userSelection[0].default_project_id;
     $http({
       method: 'DELETE',
       url: '/users/'+userId,
@@ -70,7 +72,7 @@ angular.module('angular-login.pages',
     enableRowSelection: true,
     showFilter: false,
     columnDefs: [
-      {field: 'name', displayName: 'Name'},
+      {field: 'name', displayName: 'Group name'},
       {field:'id', displayName:'ID'}
     ],
     multiSelect: false,
@@ -86,7 +88,7 @@ angular.module('angular-login.pages',
     data: 'groupUsersData',
     enableRowSelection: true,
     columnDefs: [
-      {field: 'name', displayName: 'Name'},
+      {field: 'name', displayName: 'Group member name'},
       {field:'id', displayName:'ID'}
     ],
     selectedItems: $scope.groupUserSelection,
@@ -97,10 +99,10 @@ angular.module('angular-login.pages',
     data: 'usersData2',
     enableRowSelection: true,
     columnDefs: [
-      {field: 'name', displayName: 'Name'},
+      {field: 'name', displayName: 'Other users name'},
       {field:'id', displayName:'ID'}
     ],
-    selectedItems: $scope.userSelection,
+    selectedItems: $scope.userSelection2,
     multiSelect: false
   }
 
@@ -152,7 +154,7 @@ angular.module('angular-login.pages',
   }
 
   $scope.addUserToGroup = function() {
-    $http({method: 'PUT', url: '/keystone/v3/groups/'+$scope.groupSelection[0].id+"/users/"+$scope.userSelection[0].id,
+    $http({method: 'PUT', url: '/keystone/v3/groups/'+$scope.groupSelection[0].id+"/users/"+$scope.userSelection2[0].id,
       headers: {
         'X-Auth-Token': CookieFactory.getCookie("token")
       }
@@ -172,6 +174,9 @@ angular.module('angular-login.pages',
   }
 
   $scope.addGroup = function(groupName) {
+    if(groupName == "" || "undefined" === typeof groupName)
+      return;
+
     var newGroupData = {
           "group": {
               "name": groupName
@@ -186,6 +191,19 @@ angular.module('angular-login.pages',
     }).success(function(res) {
       $scope.reloadGroups();
     });
+  }
+
+  $scope.removeGroup = function() {
+    if("undefined" !== typeof $scope.groupSelection[0]) {
+      var groupId = $scope.groupSelection[0].id;
+      $http({method: 'DELETE', url: '/keystone/v3/groups/'+groupId,
+        headers: {
+          'X-Auth-Token': CookieFactory.getCookie("token")
+        }
+      }).success(function(res) {
+        $scope.reloadGroups();
+      });
+    }
   }
 
 }).controller('UserController', function ($scope, $http, CookieFactory) {
