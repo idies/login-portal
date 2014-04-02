@@ -1,8 +1,8 @@
-<div class="jumbotron">
-	<h1>Page for registered users</h1>
+<div class="panel panel-default">
+	<h1>Available resources</h1>
 
 	<div class="panel panel-default">
-		<div class="panel-header"><h3>Available services</h3></div>
+		<div class="panel-heading"><h3>Services</h3></div>
 		<div ng-repeat="service in user.access.serviceCatalog">
 			<div class="panel-body" ng-repeat="endpoint in service.endpoints">
 				<a href="{{endpoint.publicURL | token}}">{{service.name}} ({{service.type}})</a>
@@ -10,7 +10,7 @@
 		</div>
 	</div>
 
-	<div class="panel panel-default">
+	<div class="panel panel-default panel-slider">
 		<div class="panel-heading"><h3 class="panel-title">User Info</h3></div>
 		<div class="panel-body">
 			Username: {{ user.access.user.name }}<br/>

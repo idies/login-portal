@@ -40,18 +40,15 @@
               <a ui-sref="app.home">Home</a>
             </li>
             <li ng-class="{ active: $state.is('app.user') }">
-              <a ui-sref="app.user">Resources</a>
+              <a ui-sref="app.user">User Resources</a>
             </li>
             <li ng-class="{ active: $state.is('app.admin') }">
               <a ui-sref="app.admin">Admin</a>
             </li>
-            <li ng-class="{ active: $state.is('app.register') }">
-              <a ui-sref="app.register">Sign Up <i class="fa fa-user"></i>+</a>
-            </li>
           </ul>
           <!-- Right side of the navbar -->
           <!-- Login Form -->
-          <form class="navbar-form navbar-right" name="loginForm" role="login" ng-submit="loginMe()" ng-hide="ls.isLogged || !ls.doneLoading">
+          <form class="navbar-form navbar-right hidden-sm hidden-xs" name="loginForm" role="login" ng-submit="loginMe()" ng-hide="ls.isLogged || !ls.doneLoading">
             <div class="form-group">
               <input type="text" class="form-control" ng-model="login.username" name="username" placeholder="Username">
             </div>

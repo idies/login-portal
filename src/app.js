@@ -6,7 +6,6 @@ angular.module('angular-login', [
   // different app sections
   'angular-login.home',
   'angular-login.pages',
-  'angular-login.register',
   'angular-login.error',
   // components
   'ngAnimate',
@@ -38,7 +37,7 @@ angular.module('angular-login', [
   $scope.$state = $state;
   $scope.$stateParams = $stateParams;
   
-  $scope.isCollapsed = false; // open by default
+  $scope.isCollapsed = true; // unopen by default
 
   // loginService exposed and a new Object containing login user/pwd
   $scope.ls = loginService;
@@ -73,9 +72,11 @@ angular.module('angular-login', [
     loginPromise.error(function () {
       $scope.login.wrong = true;
       $timeout(function () { $scope.login.wrong = false; }, 8000);
+      $state.go('app.home');
     });
     loginPromise.finally(function () {
       $scope.login.working = false;
+      $state.go('app.user');
     });
   };
   $scope.logoutMe = function () {
