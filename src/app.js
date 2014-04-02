@@ -81,6 +81,8 @@ angular.module('angular-login', [
   };
   $scope.logoutMe = function () {
     // loginService.logoutUser($http.get('/logout'));
+    $scope.login.username = "";
+    $scope.login.password = "";
     loginService.logoutUser();
   };
 
