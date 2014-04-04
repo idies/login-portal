@@ -4,7 +4,7 @@
 
 <form class="form-signin" name="signInForm" role="login" ng-submit="loginMe()" ng-hide="ls.isLogged || !ls.doneLoading || !regUser">
     <div class="form-group">
-      <input type="text" class="form-control" ng-model="login.username" name="username" placeholder="Username">
+      <input type="text" class="form-control" ng-model="login.username" name="username" focus placeholder="Username">
     </div>
     <div class="form-group">
       <input type="password" class="form-control" ng-model="login.password" name="password" placeholder="Password">
