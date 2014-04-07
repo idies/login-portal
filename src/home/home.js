@@ -18,7 +18,7 @@ angular.module('angular-login.home', ['angular-login.grandfather'])
 		// xhr is departing
 		$scope.xhr = true;
 
-		$http.post('/reguser', $scope.registerObj)
+		$http.post('/users', $scope.registerObj)
 		.success(function (data, status, headers, config) {
 			console.info('post success - ', data);
 			AppAlert.add('success', "Successfully registered new user", 8000);
