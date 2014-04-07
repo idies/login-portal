@@ -9,12 +9,6 @@ angular.module('angular-login.pages',
       templateUrl: 'pages/admin.tpl.html',
       controller: 'AdminController',
       accessLevel: accessLevels.admin
-    })
-    .state('app.user', {
-      url: '/user',
-      templateUrl: 'pages/user.tpl.html',
-      controller: 'UserController',
-      accessLevel: accessLevels.user
     });
 }).controller('AdminController', function ($scope, $http, CookieFactory) {
   $scope.groupSelection = [], $scope.groupUserSelection = [], $scope.userSelection = [], $scope.userSelection2 = [];
@@ -204,17 +198,5 @@ angular.module('angular-login.pages',
         $scope.reloadGroups();
       });
     }
-  }
-
-}).controller('UserController', function ($scope, $http, CookieFactory) {
-  $http({
-    url: '/keystone/v2.0/tokens/'+CookieFactory.getCookie("token"),
-    method: "GET"
-  }).success(function(res) {
-    $scope.user = res;
-  });
-}).filter('token', function(CookieFactory){
-  return function(text) {
-    return text.replace(/\{token\}/g, CookieFactory.getCookie("token"));
   }
 });

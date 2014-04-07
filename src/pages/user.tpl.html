@@ -2,7 +2,9 @@
 	<h1>Available resources</h1>
 
 	<div class="panel panel-default">
-		<div class="panel-heading"><h3>Services</h3></div>
+		<div class="panel-heading">
+			<h3>Services</h3>
+		</div>
 		<div ng-repeat="service in user.access.serviceCatalog">
 			<div class="panel-body" ng-repeat="endpoint in service.endpoints">
 				<a href="{{endpoint.publicURL | token}}">{{service.name}} ({{service.type}})</a>
@@ -10,44 +12,86 @@
 		</div>
 	</div>
 
-	<div class="panel panel-default panel-slider">
-		<div class="panel-heading"><h3 class="panel-title">User Info</h3></div>
-		<div class="panel-body">
-			Username: {{ user.access.user.name }}<br/>
-			Id: {{ user.access.user.id }}
-		</div>
-
-		<div class="panel-heading"><h3 class="panel-title">Tenant Info</h3></div>
-		<div class="panel-body">
-			Name: {{ user.access.token.tenant.name }}<br/>
-			Description: {{ user.access.token.tenant.description }}<br/>
-		</div>
-
-		<div class="panel-heading"><h3 class="panel-title">Tenant Properties</h3></div>
-		<div class="panel-body" ng-repeat="(name, value) in user.access.token.tenant.properties">
-			{{ name }}: {{value}}
-		</div>
-
-		<div class="panel-heading"><h3 class="panel-title">Token Info</h3></div>
-		<div class="panel-body">
-			Issued: {{ user.access.token.issued_at }}<br/>
-			Id: {{ user.access.token.id }}<br/>
-			Expires: {{ user.access.token.expires }}<br/>
-		</div>
-	</div>
-
-
 	<div class="panel panel-default">
-		<div class="panel-heading">Services <span class="badge">{{user.access.serviceCatalog.length}}</span></div>
-		<accordion close-others="true">
-			<accordion-group heading="{{service.name}} ({{service.type}})" ng-repeat="service in user.access.serviceCatalog">
-				<div ng-repeat="endpoint in service.endpoints">
-					<div class="panel panel-default"> AdminURL: {{endpoint.adminURL}}</div>
-					<div class="panel panel-default"> InternalURL: {{endpoint.internalURL}}</div>
-					<div class="panel panel-default"> PublicURL: {{endpoint.publicURL}}</div>
-				</div>
-			</accordion-group>
-		</accordion>
+		<div class="panel-heading form-inline">
+			Manage groups
+			<input type="text" class="form-control input-sm" placeholder="Group name" style="width: 200px; margin-left: 30px;" ng-model="newGroupName"></input>
+		<button type="button" class="btn btn-xs btn-success" ng-required="true" ng-click="addGroup(newGroupName)"> <i class="fa fa-plus"></i>
+			Add group
+		</button>
+		<button type="button" class="btn btn-xs btn-info" confirm-click="joinGroup()" confirm-message="Are you sure?"> <i class="fa fa-plus"></i>
+			Join selected group
+		</button>
 	</div>
+	<div class="panel row">
+		<div class="gridStyle" ng-grid="groupsGrid"></div>
+		<div class="panel row">
+			<div class="gridStyle col-md-5" ng-grid="groupUsersGrid"></div>
+			<div class="col-md-2" align="center">
+				<button type="button" class="btn btn-default" ng-click="addUserToGroup()">
+					<i class="fa fa-chevron-left"></i>
+				</button>
+				<button type="button" class="btn btn-default" ng-click="removeUserFromGroup()">
+					<i class="fa fa-chevron-right"></i>
+				</button>
+			</div>
+			<div class="gridStyle col-md-5" ng-grid="usersGrid"></div>
+		</div>
+	</div>
+</div>
+
+<div class="panel panel-default panel-slider" ng-show="ls.userRole.title == 'admin'">
+	<div class="panel-heading">
+		<h3 class="panel-title">User Info</h3>
+	</div>
+	<div class="panel-body">
+		Username: {{ user.access.user.name }}
+		<br/>
+		Id: {{ user.access.user.id }}
+	</div>
+
+	<div class="panel-heading">
+		<h3 class="panel-title">Tenant Info</h3>
+	</div>
+	<div class="panel-body">
+		Name: {{ user.access.token.tenant.name }}
+		<br/>
+		Description: {{ user.access.token.tenant.description }}
+		<br/>
+	</div>
+
+	<div class="panel-heading">
+		<h3 class="panel-title">Tenant Properties</h3>
+	</div>
+	<div class="panel-body" ng-repeat="(name, value) in user.access.token.tenant.properties">{{ name }}: {{value}}</div>
+
+	<div class="panel-heading">
+		<h3 class="panel-title">Token Info</h3>
+	</div>
+	<div class="panel-body">
+		Issued: {{ user.access.token.issued_at }}
+		<br/>
+		Id: {{ user.access.token.id }}
+		<br/>
+		Expires: {{ user.access.token.expires }}
+		<br/>
+	</div>
+</div>
+
+<div class="panel panel-default" ng-show="ls.userRole.title == 'admin'">
+	<div class="panel-heading">
+		Services
+		<span class="badge">{{user.access.serviceCatalog.length}}</span>
+	</div>
+	<accordion close-others="true">
+		<accordion-group heading="{{service.name}} ({{service.type}})" ng-repeat="service in user.access.serviceCatalog">
+			<div ng-repeat="endpoint in service.endpoints">
+				<div class="panel panel-default">AdminURL: {{endpoint.adminURL}}</div>
+				<div class="panel panel-default">InternalURL: {{endpoint.internalURL}}</div>
+				<div class="panel panel-default">PublicURL: {{endpoint.publicURL}}</div>
+			</div>
+		</accordion-group>
+	</accordion>
+</div>
 
 </div>

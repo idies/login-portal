@@ -2,92 +2,98 @@ var config = require('./config');
 
 var http = require('http');
 var static = require('node-static');
-var Cookies = require( "cookies" );
+var Cookies = require("cookies");
 
 // node-static imports
 var events = require('events');
-var path   = require('path');
-var fs     = require('fs');
+var path = require('path');
+var fs = require('fs');
 
 var reguser = require('./reguser');
 
 var url = require('url');
 
-var fileServer = new static.Server('./build', {cache: false, headers: {'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0'}});
+var fileServer = new static.Server('./build', {
+    cache: false,
+    headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    }
+});
 
-require('http').createServer(function (req, res) {
+require('http').createServer(function(req, res) {
 
-	var cookies = new Cookies( req, res);
+    var cookies = new Cookies(req, res);
 
-	var token = cookies.get( "token" );
+    var token = cookies.get("token");
 
- 	var url = require('url').parse(req.url, true);
-	var pathfile = url.pathname;
-	var query = url.query;
-	var callbackUrl = query["callbackUrl"];
+    var url = require('url').parse(req.url, true);
+    var pathfile = url.pathname;
+    var query = url.query;
+    var callbackUrl = query["callbackUrl"];
 
-	if(typeof token == "undefined" || typeof callbackUrl == "undefined" || query["logout"] == 'true') {
-
-        if(url.path.indexOf("/keystone/") == 0) {
+    if (typeof token == "undefined" || typeof callbackUrl == "undefined" || query["logout"] == 'true') {
+        if (url.path.indexOf("/keystone/") == 0) { // pRoxy keystone request
             proxyReq(req, res);
-        } else if(url.path.indexOf("/users") == 0) {
-            if(req.method == "DELETE") {
+        } else if (url.path.indexOf("/users") == 0) {
+            if (req.method == "DELETE") {
                 var pathSegms = url.path.split('/');
-                var userId = decodeURIComponent(pathSegms[pathSegms.length-1]);
+                var userId = decodeURIComponent(pathSegms[pathSegms.length - 1]);
                 var tenantId;
-                if(userId.indexOf('|') > 0) {
+                if (userId.indexOf('|') > 0) {
                     var ids = userId.split('|');
                     userId = ids[0];
                     tenantId = ids[1];
                 }
                 var delete_users_request = http.request({
-                        hostname: config.keystone.serverUrl,
-                        port: 35357,
-                        method: "DELETE",
-                        path: "/v2.0/users/"+userId,
-                        headers: {
-                            'X-Auth-Token':req.headers['x-auth-token']
-                        }
-                    }, function(delete_users_response) {
-                        delete_users_response.on('data', function(resp) {/*consume data*/});
-                        if("undefined" === typeof tenantId) {
+                    hostname: config.keystone.serverUrl,
+                    port: 35357,
+                    method: "DELETE",
+                    path: "/v2.0/users/" + userId,
+                    headers: {
+                        'X-Auth-Token': req.headers['x-auth-token']
+                    }
+                }, function(delete_users_response) {
+                    delete_users_response.on('data', function(resp) { /*consume data*/ });
+                    if ("undefined" === typeof tenantId) {
+                        res.writeHead(204);
+                        res.end();
+                    } else {
+                        var delete_tenants_request = http.request({
+                            hostname: config.keystone.serverUrl,
+                            port: 35357,
+                            method: "DELETE",
+                            path: "/v2.0/tenants/" + tenantId,
+                            headers: {
+                                'X-Auth-Token': req.headers['x-auth-token']
+                            }
+                        }, function(delete_tenants_response) {
+                            delete_tenants_response.on('data', function(resp) { /*consume data*/ });
                             res.writeHead(204);
                             res.end();
-                        } else {
-                            var delete_tenants_request = http.request({
-                                    hostname: config.keystone.serverUrl,
-                                    port: 35357,
-                                    method: "DELETE",
-                                    path: "/v2.0/tenants/"+tenantId,
-                                    headers: {
-                                        'X-Auth-Token':req.headers['x-auth-token']
-                                    }
-                                }, function(delete_tenants_response) {
-                                    delete_tenants_response.on('data', function(resp) {/*consume data*/});
-                                    res.writeHead(204);
-                                    res.end();
-                                }
-                            );
-                            delete_tenants_request.on('error', function(error) {
-                                res.writeHead(500, {
-                                    'Content-Length': error.message.length,
-                                    'Content-Type': 'application/json' });
-                                res.write(error.message);
-                                res.end();
+                        });
+                        delete_tenants_request.on('error', function(error) {
+                            res.writeHead(500, {
+                                'Content-Length': error.message.length,
+                                'Content-Type': 'application/json'
                             });
-                            delete_tenants_request.end();
-                        }
+                            res.write(error.message);
+                            res.end();
+                        });
+                        delete_tenants_request.end();
                     }
-                );
+                });
                 delete_users_request.on('error', function(error) {
                     res.writeHead(500, {
                         'Content-Length': error.message.length,
-                        'Content-Type': 'application/json' });
+                        'Content-Type': 'application/json'
+                    });
                     res.write(error.message);
                     res.end();
                 });
                 delete_users_request.end();
-            } else if(req.method == "POST") {
+            } else if (req.method == "POST") {
                 req.on('data', function(chunk) {
                     var reqData = JSON.parse(chunk);
                     var regUserRequest = reguser.reguser(reqData.username, reqData.password, reqData.email);
@@ -95,35 +101,120 @@ require('http').createServer(function (req, res) {
                         var body = JSON.stringify(result);
                         res.writeHead(200, {
                             'Content-Length': body.length,
-                            'Content-Type': 'application/json' });
+                            'Content-Type': 'application/json'
+                        });
                         res.write(body);
                         res.end();
                     });
                     regUserRequest.on("error", function(error) {
                         res.writeHead(500, {
                             'Content-Length': error.length,
-                            'Content-Type': 'application/json' });
-                        res.write(JSON.stringify({"error":error}));
+                            'Content-Type': 'application/json'
+                        });
+                        res.write(JSON.stringify({
+                            "error": error
+                        }));
                         res.end();
                     });
                 });
             }
+        } else if (url.path.indexOf("/groups") == 0) {
+            if (req.method == "POST") { // create new group, make the user admin of this group
+                req.on('data', function(chunk) {
+                    var create_group_request = http.request({
+                        hostname: config.keystone.serverUrl,
+                        port: 35357,
+                        method: "POST",
+                        path: "/v3/groups/",
+                        headers: {
+                            'X-Auth-Token': config.keystone.adminToken,
+                            'Content-Type':'application/json'
+                        }
+                    }, function(create_group_response) {
+                        create_group_response.on('data', function(resp) {
+                            var respData = JSON.parse(resp);
+                            var groupId = respData.group.id;
+
+                            var roleJson = {
+                                "role": {
+                                    "name": "group_admin:" + groupId
+                                }
+                            };
+                            var create_role_request = http.request({
+                                hostname: config.keystone.serverUrl,
+                                port: 35357,
+                                method: "POST",
+                                path: "/v3/roles/",
+                                headers: {
+                                    'X-Auth-Token': config.keystone.adminToken,
+                                    'Content-Type':'application/json'
+                                }
+                            }, function(create_role_response) {
+                                create_role_response.on('data', function(resp) {
+                                    var respData = JSON.parse(resp);
+                                    var roleId = respData.role.id;
+                                    var get_user_request = http.request({
+                                        hostname: config.keystone.serverUrl,
+                                        port: 35357,
+                                        method: "GET",
+                                        path: "/v3/auth/tokens/",
+                                        headers: {
+                                            'X-Auth-Token': config.keystone.adminToken,
+                                            'X-Subject-Token': req.headers['x-auth-token']
+                                        }
+                                    }, function(get_user_response) {
+                                        var response = "";
+                                        get_user_response.on('data', function(resp) {
+                                            response += resp;
+                                        });
+                                        get_user_response.on('end', function() {
+                                            var respData = JSON.parse(response);
+                                            var assign_user_request = http.request({ // assign the group_admin role to user
+                                                hostname: config.keystone.serverUrl,
+                                                port: 35357,
+                                                method: "PUT",
+                                                path: "/v3/projects/" + respData.token.project.id.trim() + "/users/" + respData.token.user.id.trim() + "/roles/" + roleId,
+                                                headers: {
+                                                    'X-Auth-Token': config.keystone.adminToken
+                                                }
+                                            }, function(create_role_response) {
+                                                create_role_response.on('data', function() { /*consume, just in case*/ });
+                                                res.writeHead(204);
+                                                res.end();
+                                            });
+                                            assign_user_request.on("error", function(error) {
+                                                console.error(error);
+                                            });
+                                            assign_user_request.end();
+                                        });
+                                    });
+                                    get_user_request.end();
+                                });
+                            });
+                            create_role_request.write(JSON.stringify(roleJson));
+                            create_role_request.end();
+                        });
+                    });
+                    create_group_request.write(chunk);
+                    create_group_request.end();
+                });
+            }
         } else {
             fileServer.serve(req, res)
-            .on("error", function(error) {
-                // serve index, angular will do the rest
-                fileServer.serveFile("/index.html", 200, {}, req, res);
-            });
+                .on("error", function(error) {
+                    // serve index, angular will do the rest
+                    fileServer.serveFile("/index.html", 200, {}, req, res);
+                });
         }
-	} else {
-		res.writeHead(302, {
-		  'Location': callbackUrl+((callbackUrl.indexOf("?") > 0)?"&":"?")+"token="+token,
-		  'Cache-Control': 'no-cache, no-store, must-revalidate',
-		  'Pragma': 'no-cache',
-		  'Expires': '0'
-		});
-		res.end();
-	}
+    } else {
+        res.writeHead(302, {
+            'Location': callbackUrl + ((callbackUrl.indexOf("?") > 0) ? "&" : "?") + "token=" + token,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        });
+        res.end();
+    }
 
 }).listen(8080);
 
@@ -142,17 +233,17 @@ var proxyReq = function(req, res) {
 
     // set admin header for allowed paths
     config.keystone.allowAdmin.forEach(function(pathPrefix) {
-        if(reqPath.indexOf(pathPrefix) == 0) {
-            options.headers["X-Auth-Token"] = config.keystone.adminToken;                                                                                                                            
+        if (reqPath.indexOf(pathPrefix) == 0) {
+            options.headers["X-Auth-Token"] = config.keystone.adminToken;
         }
     });
 
     var proxy_request = http.request(options, function(proxy_response) {
         proxy_response.on('data', function(chunk) {
-          res.write(chunk, 'binary');
+            res.write(chunk, 'binary');
         });
         proxy_response.on('end', function() {
-          res.end();
+            res.end();
         });
         res.writeHead(proxy_response.statusCode, proxy_response.headers);
     });
@@ -164,42 +255,50 @@ var proxyReq = function(req, res) {
     });
 }
 
-Server.prototype.serveDir = function (pathname, req, res, finish) {
+Server.prototype.serveDir = function(pathname, req, res, finish) {
     var htmlIndex = path.join(pathname, 'index.html'),
         that = this;
 
-    fs.stat(htmlIndex, function (e, stat) {
+    fs.stat(htmlIndex, function(e, stat) {
         if (!e) {
             var status = 200;
             var headers = {};
 
-		    var requrl = url.parse(req.url, true);
-		    var query = requrl.query;
+            var requrl = url.parse(req.url, true);
+            var query = requrl.query;
 
-		    if(query['logout'] == 'true') {
-				headers = {'Set-Cookie': 'token=; path=/; expires=01 Jan 1970 00:00:00 GMT'};
-		    }
+            if (query['logout'] == 'true') {
+                headers = {
+                    'Set-Cookie': 'token=; path=/; expires=01 Jan 1970 00:00:00 GMT'
+                };
+            }
 
             var originalPathname = decodeURI(url.parse(req.url).pathname);
             if (originalPathname.length && originalPathname.charAt(originalPathname.length - 1) !== '/') {
-                return finish(301, { 'Location': originalPathname + '/' });
+                return finish(301, {
+                    'Location': originalPathname + '/'
+                });
             } else {
                 that.respond(null, status, headers, [htmlIndex], stat, req, res, finish);
             }
         } else {
             // Stream a directory of files as a single file.
-            fs.readFile(path.join(pathname, 'index.json'), function (e, contents) {
-                if (e) { return finish(404, {}) }
+            fs.readFile(path.join(pathname, 'index.json'), function(e, contents) {
+                if (e) {
+                    return finish(404, {})
+                }
                 var index = JSON.parse(contents);
                 streamFiles(index.files);
             });
         }
     });
+
     function streamFiles(files) {
-        util.mstat(pathname, files, function (e, stat) {
-            if (e) { return finish(404, {}) }
+        util.mstat(pathname, files, function(e, stat) {
+            if (e) {
+                return finish(404, {})
+            }
             that.respond(pathname, 200, {}, files, stat, req, res, finish);
         });
     }
 };
-

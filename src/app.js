@@ -6,6 +6,7 @@ angular.module('angular-login', [
   // different app sections
   'angular-login.home',
   'angular-login.pages',
+  'angular-login.userPage',
   'angular-login.error',
   // components
   'ngAnimate',
