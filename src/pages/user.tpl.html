@@ -12,15 +12,14 @@
 		</div>
 	</div>
 
+	<div class="alert alert-warning">Changing group settings will revoke all issued tokens for its members. Affected users will have to relogin.</div>
+
 	<div class="panel panel-default">
 		<div class="panel-heading form-inline">
 			Manage groups
 			<input type="text" class="form-control input-sm" placeholder="Group name" style="width: 200px; margin-left: 30px;" ng-model="newGroupName"></input>
 		<button type="button" class="btn btn-xs btn-success" ng-required="true" ng-click="addGroup(newGroupName)"> <i class="fa fa-plus"></i>
 			Add group
-		</button>
-		<button type="button" class="btn btn-xs btn-info" confirm-click="joinGroup()" confirm-message="Are you sure?"> <i class="fa fa-plus"></i>
-			Join selected group
 		</button>
 	</div>
 	<div class="panel row">

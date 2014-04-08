@@ -8,7 +8,7 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
 			controller: 'UserController',
 			accessLevel: accessLevels.user
 		});
-}).controller('UserController', function ($scope, $http, CookieFactory) {
+}).controller('UserController', function ($scope, $http, CookieFactory, AppAlert) {
   $scope.groupSelection = [], $scope.groupUserSelection = [], $scope.userSelection = [], $scope.userSelection2 = [];
   $scope.groupsData = '', groupUsersData = '', usersData = '', usersData2 = '' /*for adding to groups*/;
   $scope.isGroupAdmin = false;
@@ -122,9 +122,35 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
       },
       data: JSON.stringify(newGroupData)
     }).success(function(res) {
-      $scope.reloadGroups();
+      $scope.logoutMe();
+      //$scope.reloadGroups();
     });
   }
+
+  $scope.addUserToGroup = function() {
+    $http({method: 'PUT', url: '/groups/'+$scope.groupSelection[0].id+"/users/"+$scope.userSelection2[0].id,
+      headers: {
+        'X-Auth-Token': CookieFactory.getCookie("token")
+      }
+    }).success(function(res) {
+      $scope.reloadMembers();
+    }).error(function(error) {
+	    AppAlert.add('danger', "Error modifying the group. Does it belong to you?");
+    });
+  }
+
+  $scope.removeUserFromGroup = function() {
+    $http({method: 'DELETE', url: '/groups/'+$scope.groupSelection[0].id+"/users/"+$scope.groupUserSelection[0].id,
+      headers: {
+        'X-Auth-Token': CookieFactory.getCookie("token")
+      }
+    }).success(function(res) {
+      $scope.reloadMembers();
+    }).error(function(error) {
+	    AppAlert.add('danger', "Error modifying the group. Does it belong to you?");
+    });
+  }
+
 
 }).filter('token', function(CookieFactory){
   return function(text) {

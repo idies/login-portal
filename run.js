@@ -118,7 +118,7 @@ require('http').createServer(function(req, res) {
                     });
                 });
             }
-        } else if (url.path.indexOf("/groups") == 0) {
+        } else if (url.pathname.indexOf("/groups") == 0) {
             if (req.method == "POST") { // create new group, make the user admin of this group
                 req.on('data', function(chunk) {
                     var create_group_request = http.request({
@@ -169,18 +169,32 @@ require('http').createServer(function(req, res) {
                                         });
                                         get_user_response.on('end', function() {
                                             var respData = JSON.parse(response);
+                                            var userId = respData.token.user.id;
+
                                             var assign_user_request = http.request({ // assign the group_admin role to user
                                                 hostname: config.keystone.serverUrl,
                                                 port: 35357,
                                                 method: "PUT",
-                                                path: "/v3/projects/" + respData.token.project.id.trim() + "/users/" + respData.token.user.id.trim() + "/roles/" + roleId,
+                                                path: "/v3/projects/" + respData.token.project.id + "/users/" + userId + "/roles/" + roleId,
                                                 headers: {
                                                     'X-Auth-Token': config.keystone.adminToken
                                                 }
                                             }, function(create_role_response) {
                                                 create_role_response.on('data', function() { /*consume, just in case*/ });
-                                                res.writeHead(204);
-                                                res.end();
+                                                var add_user_to_group_request = http.request({
+                                                    hostname: config.keystone.serverUrl,
+                                                    port: 35357,
+                                                    method: "PUT",
+                                                    path: '/v3/groups/'+groupId+"/users/"+userId,
+                                                    headers: {
+                                                        'X-Auth-Token': config.keystone.adminToken
+                                                    }
+                                                }, function(add_user_to_group_response) {
+                                                    add_user_to_group_response.on('data', function() { /*consume*/ });
+                                                    res.writeHead(204);
+                                                    res.end();
+                                                });
+                                                add_user_to_group_request.end();
                                             });
                                             assign_user_request.on("error", function(error) {
                                                 console.error(error);
@@ -198,6 +212,57 @@ require('http').createServer(function(req, res) {
                     create_group_request.write(chunk);
                     create_group_request.end();
                 });
+            } else if (req.method == "PUT" || req.method == "DELETE") { // add/remove user to group
+                var pathSplit = url.pathname.split("/");
+                var subjectUserId = pathSplit[4], groupId = pathSplit[2];
+                var get_user_request = http.request({
+                    hostname: config.keystone.serverUrl,
+                    port: 35357,
+                    method: "GET",
+                    path: "/v3/auth/tokens/",
+                    headers: {
+                        'X-Auth-Token': config.keystone.adminToken,
+                        'X-Subject-Token': req.headers['x-auth-token']
+                    }
+                }, function(get_user_response) {
+                    var response = "";
+                    get_user_response.on('data', function(resp) {
+                        response += resp;
+                        console.log(resp+"");
+                    });
+                    get_user_response.on('end', function() {
+                        var respData = JSON.parse(response);
+                        var userId = respData.token.user.id;
+                        var roles = respData.token.roles;
+                        var isAdmin = false;
+                        for(i in roles) {
+                            if(roles[i].name == "group_admin:"+groupId) { // User is group admin
+                                isAdmin = true;
+                            }
+                        }
+                        if(!isAdmin) {
+                            res.writeHead(401);
+                            res.end();
+                        } else {
+                            var add_user_to_group_request = http.request({
+                                hostname: config.keystone.serverUrl,
+                                port: 35357,
+                                method: req.method,
+                                path: '/v3/groups/'+groupId+"/users/"+subjectUserId,
+                                headers: {
+                                    'X-Auth-Token': config.keystone.adminToken
+                                }
+                            }, function(add_user_to_group_response) {
+                                add_user_to_group_response.on('data', function() { /*consume*/ });
+                                console.log("Add usr to group");
+                                res.writeHead(204);
+                                res.end();
+                            });
+                            add_user_to_group_request.end();
+                        }
+                    });
+                });
+                get_user_request.end();
             }
         } else {
             fileServer.serve(req, res)
