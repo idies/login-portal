@@ -18,8 +18,17 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
     method: "GET"
   }).success(function(res) {
     $scope.user = res;
-  });
 
+    // Filter user roles to find which groups he's admin of
+    $scope.groups_admin = [];
+    for(group_elm_num in $scope.user.access.user.roles) {
+      var group_elm = $scope.user.access.user.roles[group_elm_num];
+      if(group_elm.name.lastIndexOf("group_admin:", 0) === 0) {
+        $scope.groups_admin.push(group_elm.name.substring("group_admin:".length));
+      }
+    };
+    $scope.reloadGroups();
+  });
 
   $scope.groupsGrid = { 
     data: 'groupsData',
@@ -66,13 +75,16 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
       }
     }).success(function(res) {
       $scope.groupsData = res.groups;
+      for(groupsInd in $scope.groupsData) {
+        var groupsElm = $scope.groupsData[groupsInd];
+        if($scope.groups_admin.indexOf(groupsElm.id) != -1)
+          groupsElm.name += " (owner)";
+      }
       if (!$scope.$$phase) {
         $scope.$apply();
       }  
     });
   };
-
-  $scope.reloadGroups();
 
   $scope.reloadMembers = function() {
     var groupId = $scope.groupSelection[0].id;
