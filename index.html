@@ -48,7 +48,7 @@
           </ul>
           <!-- Right side of the navbar -->
           <!-- Login Form -->
-          <form class="navbar-form navbar-right hidden-sm hidden-xs" name="loginForm" role="login" ng-submit="loginMe()" ng-hide="ls.isLogged || !ls.doneLoading || $state.is('app.home')">
+          <form class="navbar-form navbar-right" name="loginForm" role="login" ng-submit="loginMe()" ng-hide="ls.isLogged || !ls.doneLoading || $state.is('app.home')">
             <div class="form-group">
               <input type="text" class="form-control" ng-model="login.username" name="username" placeholder="Username">
             </div>
