@@ -43,7 +43,8 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
       if("undefined" !== typeof $scope.groupSelection[0]) { // fires twice: for select and for unselect, need to catch only select
         $scope.reloadMembers();
       }
-    }
+    },
+    sortInfo: { fields: ['name'], directions: ['asc']}
   };
 
   $scope.groupUsersGrid = {
@@ -54,7 +55,8 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
       {field: 'name', displayName: 'Group member name'}
     ],
     selectedItems: $scope.groupUserSelection,
-    multiSelect: false
+    multiSelect: false,
+    sortInfo: { fields: ['name'], directions: ['asc']}
   }
 
   $scope.usersGrid = {
@@ -65,7 +67,8 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
       {field: 'name', displayName: 'Other users name'}
     ],
     selectedItems: $scope.userSelection2,
-    multiSelect: false
+    multiSelect: false,
+    sortInfo: { fields: ['name'], directions: ['asc']}
   }
 
   $scope.reloadGroups = function() {
@@ -83,6 +86,12 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
       if (!$scope.$$phase) {
         $scope.$apply();
       }  
+    }).error(function(data, status, headers, config) {
+      if(status == 401) {
+        $scope.logoutMe();
+      } else {
+        console.error(data);
+      }
     });
   };
 
@@ -114,7 +123,19 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
         if (!$scope.$$phase) {
           $scope.$apply();
         }  
+      }).error(function(data, status, headers, config) {
+        if(status == 401) {
+          $scope.logoutMe();
+        } else {
+          console.error(data);
+        }
       });
+    }).error(function(data, status, headers, config) {
+      if(status == 401) {
+        $scope.logoutMe();
+      } else {
+        console.error(data);
+      }
     });
   }
 

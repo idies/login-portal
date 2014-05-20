@@ -25,7 +25,8 @@ angular.module('angular-login.pages',
       {field: 'email', displayName: 'Email'},
       {field:'id', displayName:'User ID'},
       {field:'default_project_id', displayName:'Tenant ID'}
-    ]
+    ],
+    sortInfo: { fields: ['name'], directions: ['asc']}
   };
 
   $scope.reloadUsers = function() {
@@ -40,6 +41,13 @@ angular.module('angular-login.pages',
       if (!$scope.$$phase) {
         $scope.$apply();
       }  
+    })
+    .error(function(data, status, headers, config) {
+      if(status == 401) {
+        $scope.logoutMe();
+      } else {
+        console.error(data);
+      }
     });
   }
 
@@ -75,7 +83,8 @@ angular.module('angular-login.pages',
       if("undefined" !== typeof $scope.groupSelection[0]) { // fires twice: for select and for unselect, need to catch only select
         $scope.reloadMembers();
       }
-    }
+    },
+    sortInfo: { fields: ['name'], directions: ['asc']}
   };
 
   $scope.groupUsersGrid = {
@@ -86,7 +95,8 @@ angular.module('angular-login.pages',
       {field:'id', displayName:'ID'}
     ],
     selectedItems: $scope.groupUserSelection,
-    multiSelect: false
+    multiSelect: false,
+    sortInfo: { fields: ['name'], directions: ['asc']}
   }
 
   $scope.usersGrid = {
@@ -97,7 +107,8 @@ angular.module('angular-login.pages',
       {field:'id', displayName:'ID'}
     ],
     selectedItems: $scope.userSelection2,
-    multiSelect: false
+    multiSelect: false,
+    sortInfo: { fields: ['name'], directions: ['asc']}
   }
 
   $scope.reloadGroups = function() {
@@ -110,6 +121,12 @@ angular.module('angular-login.pages',
       if (!$scope.$$phase) {
         $scope.$apply();
       }  
+    }).error(function(data, status, headers, config) {
+      if(status == 401) {
+        $scope.logoutMe();
+      } else {
+        console.error(data);
+      }
     });
   };
 
@@ -143,6 +160,12 @@ angular.module('angular-login.pages',
           $scope.$apply();
         }  
       });
+    }).error(function(data, status, headers, config) {
+      if(status == 401) {
+        $scope.logoutMe();
+      } else {
+        console.error(data);
+      }
     });
 
   }
