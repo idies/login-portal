@@ -158,8 +158,17 @@ var handleRequest = function(req, res) {
                         'Content-Type':'application/json'
                     }
                 }, function(create_group_response) {
+                    var responseData = "";
                     create_group_response.on('data', function(resp) {
-                        var respData = JSON.parse(resp);
+                        responseData += resp;
+                    });
+                    create_group_response.on('end', function(resp) {
+                        if(create_group_response.statusCode != 201) {
+                            console.log("Error happened in 'end' of create_group_response; status: "+create_group_response.statusCode);
+                            handleError(res, "Error: "+responseData, create_group_response.statusCode);
+                            return;
+                        }
+                        var respData = JSON.parse(responseData);
                         var groupId = respData.group.id;
 
                         var roleJson = {
@@ -190,12 +199,17 @@ var handleRequest = function(req, res) {
                                         'X-Subject-Token': req.headers['x-auth-token']
                                     }
                                 }, function(get_user_response) {
-                                    var response = "";
+                                    var responseData = "";
                                     get_user_response.on('data', function(resp) {
-                                        response += resp;
+                                        responseData += resp;
                                     });
                                     get_user_response.on('end', function() {
-                                        var respData = JSON.parse(response);
+                                        if(get_user_response.statusCode != 200) {
+                                            console.log("Error happened in 'end' of get_user_response; status: "+get_user_response.statusCode);
+                                            handleError(res, "Error: "+responseData, get_user_response.statusCode);
+                                            return;
+                                        }
+                                        var respData = JSON.parse(responseData);
                                         var userId = respData.token.user.id;
 
                                         var assign_user_request = http.request({ // assign the group_admin role to user
@@ -324,9 +338,11 @@ var handleRequest = function(req, res) {
 
 }
 
-var handleError = function(res, error) {
+var handleError = function(res, error, errorCode) {
     console.error("Error occured: "+error);
-    res.writeHead(500, {
+    if(typeof errorCode === 'undefined')
+        errorCode = 500;
+    res.writeHead(errorCode, {
         'Content-Length': error.length,
         'Content-Type': 'application/json'
     });

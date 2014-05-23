@@ -157,6 +157,11 @@ angular.module('angular-login.userPage', ['angular-login.grandfather',
     }).success(function(res) {
       $scope.logoutMe();
       //$scope.reloadGroups();
+    }).error(function(data, status, headers, config) {
+      if(status == 409)
+        AppAlert.add('danger', "Error adding the group. The group already exists.");
+      else
+        AppAlert.add('danger', "Error adding the group. "+data);
     });
   }
 

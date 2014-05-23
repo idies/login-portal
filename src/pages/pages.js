@@ -10,7 +10,7 @@ angular.module('angular-login.pages',
       controller: 'AdminController',
       accessLevel: accessLevels.admin
     });
-}).controller('AdminController', function ($scope, $http, CookieFactory) {
+}).controller('AdminController', function ($scope, $http, CookieFactory, AppAlert) {
   $scope.groupSelection = [], $scope.groupUserSelection = [], $scope.userSelection = [], $scope.userSelection2 = [];
   $scope.groupsData = '', groupUsersData = '', usersData = '', usersData2 = '' /*for adding to groups*/;
 
@@ -207,6 +207,11 @@ angular.module('angular-login.pages',
       data: JSON.stringify(newGroupData)
     }).success(function(res) {
       $scope.reloadGroups();
+    }).error(function(data, status, headers, config) {
+      if(status == 409)
+        AppAlert.add('danger', "Error adding the group. The group already exists.");
+      else
+        AppAlert.add('danger', "Error adding the group. "+data);
     });
   }
 
