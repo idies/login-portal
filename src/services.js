@@ -50,7 +50,7 @@ appServices
         },
 
         deleteCookie: function(name){
-            return $.removeCookie(name);
+            return $.removeCookie(name, { path: '/' });
         }
     }
 });
