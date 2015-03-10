@@ -28,9 +28,9 @@ require('http').createServer(function (req, res) {
 
 	if(typeof token == "undefined" || typeof callbackUrl == "undefined" || query["logout"] == 'true') {
 
-        if(url.path.indexOf("/keystone/") == 0) {
+        if(url.path.indexOf("/keystone") >= 0) {
             proxyReq(req, res);
-        } else if(url.path.indexOf("/reguser") == 0) {
+        } else if(url.path.indexOf("/reguser") >= 0) {
             req.on('data', function(chunk) {
                 var reqData = JSON.parse(chunk);
                 var regUserRequest = reguser.reguser(reqData.username, reqData.password, reqData.email);
@@ -50,7 +50,7 @@ require('http').createServer(function (req, res) {
                     res.end();
                 });
             });
-        } else if(url.path.indexOf("/users") == 0) {
+        } else if(url.path.indexOf("/users") >= 0) {
             switch(req.method) {
                 case "GET":
                     // return users list for admin interface; requires admin token in request
@@ -144,26 +144,34 @@ require('http').createServer(function (req, res) {
             fileServer.serve(req, res)
             .on("error", function(error) {
                 // serve index, angular will do the rest
-                fileServer.serveFile("/index.html", 200, {}, req, res);
+                fileServer.serveFile("/login-portal/index.html", 200, {}, req, res);
             });
         }
 	} else {
+		var html = '<html><body><script>window.location.href="'+callbackUrl+((callbackUrl.indexOf("?")>0)?"&":"?")+"token="+token+'"</script></body></html>';
+		res.writeHead(200, {
+		  'Content-Length':html.length,
+		  'Content-Type':'text/html' });		
+		res.write(html);
+    /*
 		res.writeHead(302, {
 		  'Location': callbackUrl+((callbackUrl.indexOf("?") > 0)?"&":"?")+"token="+token,
 		  'Cache-Control': 'no-cache, no-store, must-revalidate',
 		  'Pragma': 'no-cache',
 		  'Expires': '0'
 		});
+    */
 		res.end();
 	}
 
-}).listen(8080);
+}).listen(8082);
 
 var proxyReq = function(req, res) {
     var url = require('url').parse(req.url);
 
-    var reqPath = url.path.substring("/keystone".length);
-
+    //console.log(url.path);
+    var reqPath = url.path.substring("/login-portal//keystone".length);
+    //console.log(reqPath);
     var options = {
         hostname: config.keystone.serverUrl,
         port: config.keystone.serverPort,

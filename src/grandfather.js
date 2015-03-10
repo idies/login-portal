@@ -17,7 +17,7 @@ angular.module('angular-login.grandfather', ['ui.router', 'templates-app'])
           if (loginService.pendingStateChange) {
             return loginService.resolvePendingState($http(
                 {
-                  url: '/keystone/v2.0/tokens/'+CookieFactory.getCookie("token"),
+                  url: '/login-portal/keystone/v2.0/tokens/'+CookieFactory.getCookie("token"),
                   method: "GET"
                 }
               ));

@@ -4,7 +4,7 @@ config.keystone = {};
 
 config.keystone.adminToken = 'admin_token';
 
-config.keystone.serverUrl = 'zinc26.pha.jhu.edu';
+config.keystone.serverUrl = 'scitest09.sdss.pha.jhu.edu';
 config.keystone.serverPort = 5000;
 
 config.keystone.allowAdmin = [

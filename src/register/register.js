@@ -2,7 +2,7 @@ angular.module('angular-login.register', ['angular-login.grandfather'])
 .config(function ($stateProvider) {
   $stateProvider
     .state('app.register', {
-      url: '/register',
+      url: '/login-portal/register',
       templateUrl: 'register/register.tpl.html',
       controller: 'RegisterController',
       accessLevel: accessLevels.anon
@@ -19,7 +19,7 @@ angular.module('angular-login.register', ['angular-login.grandfather'])
     // xhr is departing
     $scope.xhr = true;
 
-    $http.post('/reguser', $scope.registerObj)
+    $http.post('/login-portal/reguser', $scope.registerObj)
     .success(function (data, status, headers, config) {
       console.info('post success - ', data);
       AppAlert.add('success', "Successfully registered new user", 8000);

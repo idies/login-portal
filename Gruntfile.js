@@ -20,13 +20,13 @@ module.exports = function (grunt) {
           base: 'src'
         },
         src: ['src/**/*.tpl.html'],
-        dest: 'build/templates-app.js'
+        dest: 'build/login-portal/templates-app.js'
       }
     },
     less: {
       all: {
         src: 'style.less',
-        dest: 'build/style.css',
+        dest: 'build/login-portal/style.css',
         options: {
           report: 'gzip'
         }
@@ -55,66 +55,46 @@ module.exports = function (grunt) {
       },
       server: {
         files: 'run.js',
-        tasks: ['forever:restart']
+        tasks: ['forever:server1:restart']
       }
     },
     forever: {
-      options: {
-        index: 'run.js'
+      server1: {
+        options: {
+          index: 'run.js'
+        }
       }
     },
     'git-describe': {
       all: {}
     },
-    // Useful in future, when i'll need to minify
-    // concat: {
-    //   buildapp: {
-    //     src: ['src/**/*.js', 'src/*.js'],
-    //     dest: 'build/app.js',
-    //     options: {
-    //       banner: '/*! <%=pkg.name %> v<%=grunt.option("gitRevision") %> | date: <%=grunt.template.today("dd-mm-yyyy") %> */\n'
-    //     }
-    //   },
-    //   buildlibs: {
-    //     src: [
-    //       'libs/angular/angular.js',
-    //       'libs/angular-animate/angular-animate.js',
-    //       'libs/angular-mocks/angular-mocks.js',
-    //       'libs/angular-ui-router/release/angular-ui-router.js'
-    //     ],
-    //     dest: 'build/libs.js'
-    //   },
-    //   together: {
-    //     src: ['build/*.js'],
-    //     dest: 'build/all.js'
-    //   }
-    // },
+
     concat_sourcemap: {
       options: {
         sourcesContent: true
       },
       app: {
         src: ['src/**/*.js', 'src/*.js'],
-        dest: 'build/app.js'
+        dest: 'build/login-portal/app.js'
       },
       libs: {
         src: [
           'libs/angular/angular.js',
           'libs/angular-bootstrap/ui-bootstrap-tpls.min.js',
           'libs/angular-animate/angular-animate.js',
-          'libs/jquery/jquery.min.js',
+          'libs/jquery/dist/jquery.min.js',
           'libs/jquery.cookie/jquery.cookie.js',
           'libs/angular-ui-router/release/angular-ui-router.js',
           'libs/ng-grid-bower/ng-grid.min.js',
           'libs/angular-confirm-click/dist/confirmClick.js'
         ],
-        dest: 'build/libs.js'
+        dest: 'build/login-portal/libs.js'
       }
     },
     copy: {
       index: {
         src: 'index.html',
-        dest: 'build/',
+        dest: 'build/login-portal/',
         options: {
           processContent: function (content, srcpath) {
             // Compiling index.html file!
@@ -127,7 +107,7 @@ module.exports = function (grunt) {
     },
     clean: {
       all: {
-        src: ['build/']
+        src: ['build/login-portal/']
       }
     }
   });

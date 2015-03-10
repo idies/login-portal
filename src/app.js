@@ -52,7 +52,7 @@ angular.module('angular-login', [
   }
 
   $scope.loginMe = function () {
-    var loginPromise = $http.post('/keystone/v2.0/tokens', 
+    var loginPromise = $http.post('/login-portal/keystone/v2.0/tokens', 
       {
        "auth": 
        {
