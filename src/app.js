@@ -87,4 +87,7 @@ angular.module('angular-login', [
     AppAlert.closeAlert(alert);
   }
 
+  if ("undefined" == typeof $location.search().callbackUrl) {
+    $state.go('app.home');
+  }
 });

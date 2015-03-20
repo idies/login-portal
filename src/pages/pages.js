@@ -6,13 +6,13 @@ angular.module('angular-login.pages',
 .config(function ($stateProvider) {
   $stateProvider
     .state('app.admin', {
-      url: '/admin',
+      url: '/login-portal/admin',
       templateUrl: 'pages/admin.tpl.html',
       controller: 'AdminController',
       accessLevel: accessLevels.admin
     })
     .state('app.user', {
-      url: '/user',
+      url: '/login-portal/user',
       templateUrl: 'pages/user.tpl.html',
       controller: 'UserController',
       accessLevel: accessLevels.user
@@ -37,7 +37,7 @@ angular.module('angular-login.pages',
   $scope.reloadUsers = function() {
     $http({
       method: 'GET',
-      url: '/users',
+      url: '/login-portal/users',
       headers: {
         'X-Auth-Token': CookieFactory.getCookie("token")
       }
@@ -54,7 +54,7 @@ angular.module('angular-login.pages',
   $scope.deleteUser = function (userId) {
     $http({
       method: 'DELETE',
-      url: '/users/'+userId,
+      url: '/login-portal/users/'+userId,
       headers: {
         'X-Auth-Token': CookieFactory.getCookie("token")
       }
@@ -65,7 +65,7 @@ angular.module('angular-login.pages',
 
 }).controller('UserController', function ($scope, $http, CookieFactory) {
   $http({
-    url: '/keystone/v2.0/tokens/'+CookieFactory.getCookie("token"),
+    url: '/login-portal/keystone/v2.0/tokens/'+CookieFactory.getCookie("token"),
     method: "GET"
   }).success(function(res) {
     $scope.user = res;
