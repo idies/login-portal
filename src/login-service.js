@@ -97,7 +97,12 @@ angular.module('loginService', [])
             return $state.go(redirectObj.state, { error: redirectObj.prefix + error }, { location: false, inherit: false });
           }
         }
-        return $state.go(errorState, { error: error }, { location: false, inherit: false });
+    	if ($location.path() == '/' || $location.path() == '/login-portal/') {
+    	  return $state.go(errorState, { error: error });
+    	}
+    	else {
+          return $state.go(errorState, { error: error }, { location: false, inherit: false });  
+    	}
       });
     };
 
