@@ -217,7 +217,7 @@ Server.prototype.serveDir = function (pathname, req, res, finish) {
 		    var query = requrl.query;
 
 		    if(query['logout'] == 'true') {
-				headers = {'Set-Cookie': 'token=; path=/; expires=01 Jan 1970 00:00:00 GMT'};
+			headers = {'Set-Cookie': 'token=deleted; path=/; expires=Thu, 01-Jan-1970 00:00:01 GMT'};
 		    }
 
             var originalPathname = decodeURI(url.parse(req.url).pathname);
