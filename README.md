@@ -1,7 +1,9 @@
 login-portal
 ============
 
-The portal for DIBBs Single Sign On
+The portal for DIBBs Single Sign On. 
+The old JavaScript version of the SSO portal. 
+No longer in use.
 
 Installation
 ------------
